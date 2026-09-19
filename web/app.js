@@ -1,7 +1,7 @@
-// Consulta do Anexo VIII — página estática, sem dependências.
+// Correlação NFS — consulta do Anexo VIII em página estática, sem dependências.
 // Os dados vêm de data/anexo8.json, gerado por ../build/gerar.py.
 (async () => {
-  const UI_VERSION = '2026-09-19.1';
+  const UI_VERSION = '2026-09-19.2';
   const documentVersion = document.documentElement.dataset.uiVersion;
 
   // Um HTML antigo em cache pode carregar o JavaScript novo e quebrar a tela.

@@ -5,7 +5,7 @@ Serve para quem não tem onde hospedar: o arquivo abre com duplo clique, direto 
 disco ou de uma pasta de rede, sem servidor.
 
 Uso:
-  python3 empacotar.py     escreve ../dist/fluxo-anexo-viii.html
+  python3 empacotar.py     escreve ../dist/correlacao-nfs.html
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 WEB = RAIZ / "web"
-SAIDA = RAIZ / "dist" / "fluxo-anexo-viii.html"
+SAIDA = RAIZ / "dist" / "correlacao-nfs.html"
 
 TAG_CSS = re.compile(r'<link rel="stylesheet" href="app\.css(?:\?[^\"]*)?">')
 TAG_JS = re.compile(r'<script src="app\.js(?:\?[^\"]*)?" defer></script>')
