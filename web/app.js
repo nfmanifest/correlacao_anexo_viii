@@ -1,7 +1,7 @@
 // Correlação NFS — consulta do Anexo VIII em página estática, sem dependências.
 // Os dados vêm de data/anexo8.json, gerado por ../build/gerar.py.
 (async () => {
-  const UI_VERSION = '2026-09-19.2';
+  const UI_VERSION = '2026-09-19.3';
   const documentVersion = document.documentElement.dataset.uiVersion;
 
   // Um HTML antigo em cache pode carregar o JavaScript novo e quebrar a tela.
@@ -48,7 +48,7 @@
   let D = window.__ANEXO8__;
   if (!D) {
     try {
-      const resposta = await fetch('data/anexo8.json');
+      const resposta = await fetch('data/anexo8.json?v=' + encodeURIComponent(UI_VERSION));
       if (!resposta.ok) throw new Error('Falha ao carregar os dados');
       D = await resposta.json();
     } catch (erro) {
@@ -504,7 +504,12 @@
   $('.sub').textContent = nf(D.meta.subitens) + ' subitens · ' + nf(D.meta.nbs) +
     ' códigos NBS · ' + nf(D.meta.rotas) + ' rotas de correlação.';
   $('#source-anexo').textContent = D.meta.fonte_anexo + ' (' + D.meta.versao + ')';
-  $('#source-cclass').textContent = D.meta.fonte_cc;
+  const publicacaoCclass = D.meta.fonte_cc_publicacao
+    ? D.meta.fonte_cc_publicacao.split('-').reverse().join('/')
+    : null;
+  $('#source-cclass').textContent = D.meta.fonte_cc +
+    (publicacaoCclass ? ' · publicada em ' + publicacaoCclass : '') +
+    (D.meta.fonte_cc_total ? ' · ' + nf(D.meta.fonte_cc_total) + ' códigos' : '');
   $('#foot').textContent =
     'Fonte: ' + D.meta.fonte_anexo + ', a aba REGRA inc. X do mesmo arquivo e ' + D.meta.fonte_cc + '. ' +
     'Esta consulta reproduz o Anexo VIII ' + D.meta.versao + ' e preserva os códigos indOp do Anexo VII v1.01.00 usados na correlação original. ' +

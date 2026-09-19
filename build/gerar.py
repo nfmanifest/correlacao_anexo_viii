@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Gera o JSON de consulta do Anexo VIII a partir das planilhas oficiais.
+"""Gera o JSON de consulta do Anexo VIII a partir das fontes oficiais.
 
 Entradas (pasta fontes/):
   AnexoVIII-CorrelacaoItemNBSIndOpCClassTrib_IBSCBS_V*.xlsx
-  TabelaClassificacaoTributaria_IBSCBS.xlsx
+  TabelaClassificacaoTributaria_IBSCBS_AAAA-MM-DD.json
 
 Saída:
   ../web/data/anexo8.json
@@ -125,6 +125,14 @@ def achar_fonte(padrao: str) -> Path:
     return encontrados[-1]
 
 
+def achar_fonte_classificacao() -> Path:
+    """Prefere o snapshot JSON atual; mantém compatibilidade com a planilha histórica."""
+    snapshots = sorted(FONTES.glob("TabelaClassificacaoTributaria_IBSCBS_*.json"))
+    if snapshots:
+        return snapshots[-1]
+    return achar_fonte("TabelaClassificacaoTributaria*.xlsx")
+
+
 def ler_correlacao(caminho: Path) -> list[dict]:
     """Desfaz as mesclagens: cada linha passa a valer sozinha."""
     planilha = openpyxl.load_workbook(caminho)
@@ -162,7 +170,50 @@ def ler_correlacao(caminho: Path) -> list[dict]:
     return linhas
 
 
-def ler_classificacao(caminho: Path) -> dict[str, dict]:
+def formatar_percentual(valor: float) -> str:
+    return str(int(valor)) if valor == int(valor) else str(valor).replace(".", ",")
+
+
+def tratamento_classificacao(item: dict) -> str:
+    """Transforma os percentuais oficiais em um rótulo curto para a interface."""
+    cst = item["cst"]
+    ibs = float(item["percentual_reducao_ibs"])
+    cbs = float(item["percentual_reducao_cbs"])
+    if cst == "011" and ibs == cbs:
+        return f"{item['descricao_cst']} em {formatar_percentual(ibs)}%"
+    if cst != "200":
+        return item["descricao_cst"]
+
+    if ibs == cbs == 100:
+        return "Alíquota zero"
+    if cbs == 100 and ibs < 100:
+        return f"Alíquota zero apenas CBS e reduzida em {formatar_percentual(ibs)}% para IBS"
+    if ibs == cbs:
+        return f"Alíquota reduzida em {formatar_percentual(ibs)}%"
+    return (
+        "Redução de alíquota: IBS "
+        f"{formatar_percentual(ibs)}% · CBS {formatar_percentual(cbs)}%"
+    )
+
+
+def ler_classificacao_json(caminho: Path) -> tuple[dict[str, dict], dict]:
+    dados = json.loads(caminho.read_text(encoding="utf-8"))
+    tabela = {}
+    for item in dados["classificacoes"]:
+        url = item.get("url_legislacao") or ""
+        artigo = re.search(r"#art(\d+)", url, re.IGNORECASE)
+        tabela[item["codigo"]] = {
+            "cst": item["cst"],
+            "tratamento": tratamento_classificacao(item),
+            "nome": texto_limpo(item["descricao_reduzida"]),
+            "nome_completo": texto_limpo(item["descricao"]),
+            "truncado": False,
+            "artigo": f"Art. {artigo.group(1)}" if artigo else None,
+        }
+    return tabela, dados["meta"]
+
+
+def ler_classificacao_xlsx(caminho: Path) -> tuple[dict[str, dict], dict]:
     aba = openpyxl.load_workbook(caminho, data_only=True).worksheets[0]
     tabela = {}
     for linha in aba.iter_rows(min_row=2, values_only=True):
@@ -181,7 +232,13 @@ def ler_classificacao(caminho: Path) -> dict[str, dict]:
             "truncado": len(bruto) >= 100,
             "artigo": artigo.group(1) if artigo else None,
         }
-    return tabela
+    return tabela, {"total_classificacoes": len(tabela)}
+
+
+def ler_classificacao(caminho: Path) -> tuple[dict[str, dict], dict]:
+    if caminho.suffix.lower() == ".json":
+        return ler_classificacao_json(caminho)
+    return ler_classificacao_xlsx(caminho)
 
 
 def montar_rotas(linhas: list[dict]) -> dict[str, list[dict]]:
@@ -265,11 +322,11 @@ def main() -> None:
     opcoes = argumentos.parse_args()
 
     fonte_anexo = achar_fonte("AnexoVIII-*.xlsx")
-    fonte_classificacao = achar_fonte("TabelaClassificacaoTributaria*.xlsx")
+    fonte_classificacao = achar_fonte_classificacao()
     versao = re.search(r"_V(\d+\.\d+\.\d+)", fonte_anexo.name)
 
     linhas = ler_correlacao(fonte_anexo)
-    classificacao = ler_classificacao(fonte_classificacao)
+    classificacao, meta_classificacao = ler_classificacao(fonte_classificacao)
     grupos = json.loads((REFERENCIAS / "grupos-lc116.json").read_text(encoding="utf-8"))["grupos"]
     correcoes = json.loads((REFERENCIAS / "correcoes-cclasstrib.json").read_text(encoding="utf-8"))["correcoes"]
 
@@ -314,6 +371,9 @@ def main() -> None:
             "rotas": sum(len(r) for r in rotas.values()),
             "fonte_anexo": fonte_anexo.name,
             "fonte_cc": fonte_classificacao.name,
+            "fonte_cc_url": meta_classificacao.get("fonte"),
+            "fonte_cc_publicacao": meta_classificacao.get("publicado_em"),
+            "fonte_cc_total": meta_classificacao.get("total_classificacoes"),
         },
         "itens": itens,
         "nbs": nbs,
