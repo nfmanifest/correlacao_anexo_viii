@@ -1,9 +1,9 @@
-# Fluxo do Anexo VIII
+# Correlação NFS
 
-Consulta de correlação para IBS e CBS, feita para o atendimento: partindo do subitem da
-lista de serviços da LC 116/2003, mostra os NBS, o indOp que define onde o imposto incide e
-o cClassTrib que define como ele é tributado — com o CST e o artigo da LC 214/2025 de cada
-classificação.
+Ferramenta de consulta para o atendimento fiscal. O primeiro módulo organiza a correlação
+do Anexo VIII: partindo do subitem da lista de serviços da LC 116/2003, mostra os NBS, o
+indOp que define onde o imposto incide e o cClassTrib que define como ele é tributado — com
+o CST e o artigo da LC 214/2025 de cada classificação.
 
 As 1.521 linhas do Anexo VIII se resolvem em **268 rotas** de correlação. É essa a leitura
 que a página oferece: em vez da planilha com mesclagem vertical, um fluxo por subitem com as
@@ -20,7 +20,7 @@ python3 -m http.server 8000
 # http://localhost:8000
 ```
 
-Se não houver onde hospedar, use a versão de arquivo único em `dist/fluxo-anexo-viii.html`:
+Se não houver onde hospedar, use a versão de arquivo único em `dist/correlacao-nfs.html`:
 ela tem CSS, script e dados embutidos e abre com duplo clique, direto do disco ou de uma
 pasta de rede, sem servidor nenhum.
 
@@ -60,7 +60,7 @@ manter nem dado que saia do navegador de quem consulta.
 cd build && python3 empacotar.py
 ```
 
-Escreve `dist/fluxo-anexo-viii.html` com tudo embutido. É a via mais curta para colocar a
+Escreve `dist/correlacao-nfs.html` com tudo embutido. É a via mais curta para colocar a
 consulta na mão do atendimento: anexar o arquivo, pôr numa pasta compartilhada ou na
 intranet. Regenere depois de cada atualização dos dados.
 
@@ -73,10 +73,10 @@ web/                      a página; é só isso que precisa ir para produção
   app.js
   data/anexo8.json        dados gerados, versionados
 dist/
-  fluxo-anexo-viii.html   a mesma página em arquivo único, para uso sem servidor
+  correlacao-nfs.html     a mesma página em arquivo único, para uso sem servidor
 build/
   gerar.py                lê as planilhas oficiais e escreve web/data/anexo8.json
-  empacotar.py            gera dist/fluxo-anexo-viii.html a partir de web/
+  empacotar.py            gera dist/correlacao-nfs.html a partir de web/
   fontes/                 planilhas oficiais, versionadas
   referencias/
     grupos-lc116.json     os 41 cabeçalhos da lista de serviços
