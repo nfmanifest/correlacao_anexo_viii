@@ -9,6 +9,29 @@ As 1.521 linhas do Anexo VIII se resolvem em **268 rotas** de correlação. É e
 que a página oferece: em vez da planilha com mesclagem vertical, um fluxo por subitem com as
 caixas ligadas.
 
+A página tem cinco áreas — **NFS-e** (consulta da correlação), **NF-e 55** e **NFCom 62**
+(tabelas completas de CFOP), **Reforma Tributária** (linha do tempo, tributos, prazos,
+cClassTrib, indOp e glossário) e **Fontes oficiais** (catálogo de MOCs, schemas, NTs e
+tabelas de apoio) — com busca e filtros próprios em cada uma.
+
+## Navegação, tema e catálogo
+
+- A sidebar do portal Apps Script é a navegação única: `Início`, `NFS-e`, `NF-e 55`,
+  `NFCom 62`, `Reforma Tributária` e `Fontes oficiais`. Cada item abre a área
+  correspondente; não há grupo intermediário nem abas duplicadas.
+- Dentro da página, as cinco áreas são painéis distintos: a consulta da NFS-e não carrega
+  tabelas da Reforma Tributária, o catálogo de fontes não aparece na NFS-e e as tabelas de
+  CFOP ficam nas abas de cada documento.
+- Quando a página é embutida (`window.self !== window.top`), a marca, o seletor de tema
+  e a barra de abas da própria página são ocultados: o portal é dono da navegação e do
+  tema. A página escuta `nexo:goto` (alvos `fluxo`, `nfe`, `nfcom`, `reforma`, `fontes`
+  ou uma âncora) e `nexo:theme` por `postMessage`.
+- O tema é único no portal (`localStorage['nexo-theme']`, valores `light`, `dark` ou
+  `system`). A página apenas aplica o tema recebido e não grava a preferência quando está
+  embutida.
+- O catálogo é renderizado a partir de `web/data/fontes-oficiais.json`. O HTML não repete
+  títulos, critérios nem datas: tudo vem do JSON.
+
 ## Abrir
 
 A página é estática e não tem dependências. Como ela busca os dados por `fetch`, precisa ser
@@ -71,17 +94,35 @@ web/                      a página; é só isso que precisa ir para produção
   index.html
   app.css
   app.js
-  data/anexo8.json        dados gerados, versionados
+  data/anexo8.json        correlação da NFS-e, dados gerados e versionados
+  data/cfop.json          tabela de CFOP: 461 códigos, 444 na NF-e e 17 na NFCom
+  data/cclasstrib.json    173 códigos e 18 CST do IBS/CBS, com fundamento e vigência
+  data/reforma.json       linha do tempo, tributos, prazos, mudanças e glossário
+  data/fontes-oficiais.json  catálogo de 23 fontes, critérios e regras de governança
 dist/
   correlacao-nfs.html     a mesma página em arquivo único, para uso sem servidor
 build/
   gerar.py                lê as planilhas oficiais e escreve web/data/anexo8.json
+  gerar_cfop.py           lê os PDFs oficiais de CFOP e escreve web/data/cfop.json
+  gerar_cclasstrib.py     lê a planilha oficial de cClassTrib e escreve web/data/cclasstrib.json
   empacotar.py            gera dist/correlacao-nfs.html a partir de web/
-  fontes/                 planilhas oficiais, versionadas
+  fontes/                 planilhas e PDFs oficiais, versionados
   referencias/
     grupos-lc116.json     os 41 cabeçalhos da lista de serviços
     correcoes-cclasstrib.json  correções de rótulo conferidas na tabela oficial
 ```
+
+## Uso no portal Apps Script
+
+O projeto Apps Script (portal Nexo Fiscal) não mantém cópia de `web/`. O `Code.gs` carrega
+os oito arquivos deste repositório (`web/index.html`, `app.css`, `app.js`,
+`data/anexo8.json`, `data/fontes-oficiais.json`, `data/cfop.json`, `data/cclasstrib.json`
+e `data/reforma.json`), embute CSS, JavaScript e JSON no iframe e usa `installAssets()`
+apenas como cache versionado em `PropertiesService`.
+
+A fonte única de verdade é este repositório. Para atualizar o portal, altere `web/`, rode
+`python build/empacotar.py` (se usar o arquivo único) e execute `installAssets()` no Apps
+Script para regravar o cache.
 
 ## Atualizar quando sair uma versão nova
 
@@ -113,6 +154,41 @@ O que o gerador faz com a planilha:
 Nenhum dado é inventado. As lacunas da planilha continuam lacunas e aparecem marcadas em
 vermelho no fluxo.
 
+### Tabelas de CFOP (NF-e e NFCom)
+
+As abas **NF-e 55** e **NFCom 62** são geradas por `build/gerar_cfop.py` a partir dos PDFs
+oficiais em `build/fontes/`:
+
+```bash
+python build/gerar_cfop.py --validar
+```
+
+O resultado é `web/data/cfop.json`, com 461 códigos, a descrição, a nota explicativa e o
+grupo de cada um. A NF-e usa 444 códigos do Ajuste SINIEF 07/01; a NFCom usa 17 códigos do
+MOC Online da NFCom. O `5.933` não consta do Ajuste e entra como complemento declarado, com
+a descrição do próprio MOC. O gerador falha se um CFOP da NFCom não existir nem na base nem
+na lista de complementos — é a trava contra código inventado.
+
+### Tabela de cClassTrib
+
+A aba **Reforma Tributária** usa `web/data/cclasstrib.json`, gerado por
+`build/gerar_cclasstrib.py` a partir da planilha IT 2025.002 v.1.70:
+
+```bash
+python build/gerar_cclasstrib.py --validar
+```
+
+São 173 códigos e 18 CST, com nome, descrição, fundamento na LC 214/2025, tipo de alíquota,
+reduções de IBS e CBS, vigência e documentos em que cada código é aceito. Os 28 códigos que
+aparecem no Anexo VIII recebem o selo "Anexo VIII" e podem ser isolados por filtro.
+
+### Conteúdo editorial da Reforma
+
+`web/data/reforma.json` guarda o texto da aba: linha do tempo de 2026 a 2033, os três
+tributos (CBS, IBS e IS), os cinco tributos substituídos, as mudanças de regra, os prazos e
+o glossário. É conteúdo editorial versionado — ao corrigir uma data ou um prazo, edite o
+JSON e rode `python build/empacotar.py`.
+
 ## O que conferir antes de confiar na resposta
 
 A conferência das 1.521 linhas contra a tabela oficial de classificação tributária apontou:
@@ -141,5 +217,12 @@ validação vinculadas a ele em produção nem no piloto RTC. Sugestões de corr
 - Tabela de classificação tributária do IBS e da CBS (CST + cClassTrib)
 - Nota Técnica SE/CGNFS-e nº 009/2026, de 4 de junho de 2026
 - Cabeçalhos da lista de serviços: tabela de Código de Tributação Nacional
+- Ajuste SINIEF 07/01 — tabela nacional de CFOP
+- IT 2023.002 v2.00 — tabela de CFOP da NF-e
+- MOC Online da NFCom — tabelas e códigos
+- IT 2025.002 v1.70 — planilha de CST e cClassTrib
+- LC 214/2025 e páginas da Receita Federal sobre a Reforma Tributária do Consumo
 
-Todas em <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc>.
+As fontes da NFS-e estão em <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc>.
+O catálogo completo, com 23 links e o critério de uso de cada um, fica na aba **Fontes
+oficiais** e em `web/data/fontes-oficiais.json`.

@@ -1,7 +1,7 @@
 // Correlação NFS — consulta do Anexo VIII em página estática, sem dependências.
 // Os dados vêm de data/anexo8.json, gerado por ../build/gerar.py.
 (async () => {
-  const UI_VERSION = '2026-09-19.2';
+  const UI_VERSION = '2026-10-24.2';
   const documentVersion = document.documentElement.dataset.uiVersion;
 
   // Um HTML antigo em cache pode carregar o JavaScript novo e quebrar a tela.
@@ -33,6 +33,36 @@
     return terms(query).some(term => value.includes(term) || (/\d/.test(term) && packed.includes(compact(term))));
   };
 
+  /* ---------- tema e modo embutido ---------- */
+  const THEME_KEY = 'nexo-theme';
+  const embedded = window.self !== window.top;
+  if (embedded) document.documentElement.dataset.embedded = 'true';
+  const themeQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  function currentTheme() {
+    const set = document.documentElement.dataset.theme;
+    if (set === 'light' || set === 'dark') return set;
+    return themeQuery && themeQuery.matches ? 'dark' : 'light';
+  }
+  function syncThemeButton() {
+    const b = $('#theme-toggle');
+    if (!b) return;
+    const dark = currentTheme() !== 'light';
+    b.textContent = dark ? '☼ Tema claro' : '◐ Tema escuro';
+    b.setAttribute('aria-label', dark ? 'Ativar tema claro' : 'Ativar tema escuro');
+  }
+  function applyTheme(theme, notify = true) {
+    const value = theme === 'light' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = value;
+    if (!embedded) { try { localStorage.setItem(THEME_KEY, value); } catch (e) { } }
+    syncThemeButton();
+    if (notify && embedded) {
+      try { parent.postMessage({ type: 'nexo:theme', theme: value }, '*'); } catch (e) { }
+    }
+  }
+  const themeBtn = $('#theme-toggle');
+  if (themeBtn) themeBtn.onclick = () => applyTheme(currentTheme() === 'light' ? 'dark' : 'light');
+  syncThemeButton();
+
   function showLoadError() {
     const detail = $('#detail');
     detail.textContent = '';
@@ -56,6 +86,26 @@
       return;
     }
   }
+
+  let FONTES = window.__FONTES__;
+  if (!FONTES) {
+    try {
+      const resposta = await fetch('data/fontes-oficiais.json');
+      if (resposta.ok) FONTES = await resposta.json();
+    } catch (erro) { /* catálogo é opcional */ }
+  }
+
+  async function carregarJson(global, arquivo) {
+    if (window[global]) return window[global];
+    try {
+      const resposta = await fetch(arquivo);
+      if (resposta.ok) return await resposta.json();
+    } catch (erro) { /* tabela opcional */ }
+    return null;
+  }
+  const CFOP = await carregarJson('__CFOP__', 'data/cfop.json');
+  const CCLASSTRIB = await carregarJson('__CCLASSTRIB__', 'data/cclasstrib.json');
+  const REFORMA = await carregarJson('__REFORMA__', 'data/reforma.json');
 
   const LOC_ORDER = ['Local da prestação', 'Domicílio principal do adquirente', 'Local do imóvel',
     'Local da entrega ou da disponibilização', 'Local do evento', 'Domicílio principal do adquirente (matriz)', 'Via explorada'];
@@ -102,7 +152,7 @@
   function syncUrl(tab) {
     const url = new URL(window.location.href);
     if (state.sel) url.searchParams.set('item', state.sel);
-    if ((tab || url.searchParams.get('tab')) === 'ref') url.searchParams.set('tab', 'ref');
+    if (tab && tab !== 'fluxo') url.searchParams.set('tab', tab);
     else url.searchParams.delete('tab');
     try { history.replaceState(null, '', url.href); } catch (e) { }
   }
@@ -130,6 +180,20 @@
     if (full) b.appendChild(el('span', null, 'Copiar código'));
     b.onclick = e => { e.stopPropagation(); copyText(value, value + ' copiado'); };
     return b;
+  }
+
+  // Dentro do iframe (srcdoc) a URL é "about:srcdoc": usa a URL do portal.
+  function portalUrl() {
+    if (window.location.href.indexOf('about:') === 0) {
+      try {
+        if (window.parent && window.parent !== window && window.parent.location.href) {
+          return window.parent.location.href;
+        }
+      } catch (e) { }
+      try { if (document.referrer) return document.referrer; } catch (e) { }
+      return '';
+    }
+    return window.location.href;
   }
 
   /* ---------- filtros ---------- */
@@ -383,7 +447,12 @@
     const navActions = el('div', 'nav-actions');
     const share = el('button', 'share-btn'); share.type = 'button';
     share.append(el('span', null, 'Compartilhar consulta'), el('span', 'share-icon', '↗'));
-    share.onclick = () => { syncUrl(); copyText(window.location.href, 'Link da consulta copiado'); };
+    share.onclick = () => {
+      syncUrl();
+      const url = portalUrl();
+      if (!url) { toast('Copie o endereço da barra do navegador'); return; }
+      copyText(url, embedded ? 'Link do portal copiado' : 'Link da consulta copiado');
+    };
     navActions.appendChild(share);
     const nb = el('div', 'nav');
     [['‹', -1, 'Subitem anterior'], ['›', 1, 'Próximo subitem']].forEach(([g, dl, lab]) => {
@@ -512,64 +581,409 @@
     'Lacunas da planilha aparecem marcadas em vermelho no fluxo.';
 
   /* ---------- tabelas de apoio ---------- */
-  let refDone = false;
-  function filterRef() {
-    if (!refDone) return;
-    const query = $('#refq').value.trim();
-    const filterTable = (table, count, noun) => {
-      const rows = [...table.querySelectorAll('tbody tr')];
-      let visible = 0;
-      rows.forEach(row => {
-        const show = !query || terms(query).every(term => {
-          const packedTerm = compact(term);
-          return row.dataset.search.includes(term) || (packedTerm && row.dataset.packed.includes(packedTerm));
-        });
-        row.hidden = !show; if (show) visible++;
-      });
-      count.textContent = query ? visible + ' de ' + rows.length + ' ' + noun : rows.length + ' ' + noun;
-    };
-    filterTable($('#indtbl'), $('#ind-count'), 'códigos');
-    filterTable($('#cctbl'), $('#cc-count'), 'classificações');
-  }
-  function renderRef() {
-    if (refDone) return; refDone = true;
+  const DOC_NOME = { nfse: 'NFS-e', nfe: 'NF-e', nfcom: 'NFCom' };
+  const A8 = new Set(Object.keys(D.cclass || {}));
 
-    const it = $('#indtbl');
-    it.innerHTML = '<thead><tr><th>indOp</th><th>Local de incidência do IBS e da CBS</th></tr></thead>';
-    const ib = el('tbody');
+  function dadosBusca(partes) {
+    const search = norm(partes.filter(Boolean).join(' '));
+    return { search, packed: compact(search) };
+  }
+  function combina(consulta, alvo) {
+    const lista = terms(consulta);
+    if (!lista.length) return true;
+    return lista.every(termo =>
+      alvo.search.includes(termo) || (/\d/.test(termo) && alvo.packed.includes(compact(termo))));
+  }
+  function dataBr(valor) {
+    if (!valor) return '';
+    const p = String(valor).split('-');
+    return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : String(valor);
+  }
+
+  /* ---------- CFOP: NF-e e NFCom ---------- */
+  let cfopDone = false;
+  function montarCfop(cfg) {
+    const tabela = $(cfg.tabela);
+    if (!tabela) return;
+    const itens = ((CFOP && CFOP.itens) || []).filter(i => (i.docs || []).includes(cfg.doc));
+    const q = $(cfg.q), g = $(cfg.g), nat = $(cfg.nat);
+
+    if (g && CFOP && CFOP.grupos) {
+      g.appendChild(new Option('Todos os grupos', ''));
+      Object.keys(CFOP.grupos).sort().forEach(k => {
+        const nome = CFOP.grupos[k];
+        g.appendChild(new Option(k + ' · ' + (nome.length > 52 ? nome.slice(0, 51) + '…' : nome), k));
+      });
+    }
+
+    tabela.innerHTML = '<thead><tr><th>Código</th><th>Descrição</th><th class="th-note">Nota</th></tr></thead>';
+    const corpo = el('tbody');
+    const linhas = [];
+
+    itens.forEach(item => {
+      const tr = el('tr', 'cfop-row');
+      const busca = dadosBusca([item.c, item.d, item.n, (CFOP.grupos || {})[item.g]]);
+      tr.dataset.search = busca.search;
+      tr.dataset.packed = busca.packed;
+
+      tr.append(el('td', 'k', item.c), el('td', null, item.d));
+
+      const celula = el('td', 'act');
+      const botao = el('button', 'row-toggle', 'Nota');
+      botao.type = 'button';
+      botao.setAttribute('aria-expanded', 'false');
+      botao.setAttribute('aria-label', 'Ver a nota do CFOP ' + item.c);
+      celula.appendChild(botao);
+      tr.appendChild(celula);
+
+      const detalhe = el('tr', 'detail-row');
+      detalhe.hidden = true;
+      const td = el('td');
+      td.colSpan = 3;
+      td.appendChild(el('p', 'note', item.n));
+      detalhe.appendChild(td);
+
+      const linha = { item, tr, detalhe, aberto: false };
+      botao.onclick = () => {
+        linha.aberto = !linha.aberto;
+        detalhe.hidden = !linha.aberto;
+        botao.setAttribute('aria-expanded', String(linha.aberto));
+        botao.textContent = linha.aberto ? 'Fechar' : 'Nota';
+      };
+
+      corpo.append(tr, detalhe);
+      linhas.push(linha);
+    });
+    tabela.appendChild(corpo);
+
+    const contador = $(cfg.contador);
+    const total = itens.length;
+    function aplicar() {
+      const consulta = q ? q.value : '';
+      const grupo = g ? g.value : '';
+      const natureza = nat ? nat.value : '';
+      let visiveis = 0;
+      linhas.forEach(linha => {
+        const ok = (!grupo || linha.item.g === grupo) &&
+          (!natureza || linha.item.nat === natureza) &&
+          combina(consulta, { search: linha.tr.dataset.search, packed: linha.tr.dataset.packed });
+        linha.tr.hidden = !ok;
+        linha.detalhe.hidden = !ok || !linha.aberto;
+        if (ok) visiveis++;
+      });
+      if (contador) {
+        contador.textContent = (visiveis === total ? nf(total) : nf(visiveis) + ' de ' + nf(total)) + ' códigos';
+      }
+    }
+    [q, g, nat].forEach(campo => {
+      if (!campo) return;
+      campo.addEventListener('input', aplicar);
+      campo.addEventListener('change', aplicar);
+    });
+
+    const nota = $(cfg.nota);
+    if (nota && CFOP && CFOP.meta) nota.textContent = cfg.notaTexto(CFOP.meta);
+    aplicar();
+  }
+
+  function renderCfop() {
+    if (cfopDone) return;
+    cfopDone = true;
+    montarCfop({
+      doc: 'nfe',
+      tabela: '#nfe-tbl', contador: '#nfe-count', nota: '#nfe-note',
+      q: '#nfe-q', g: '#nfe-g', nat: '#nfe-nat',
+      notaTexto: meta =>
+        'Base: ' + meta.ajuste + ', com ' + nf(meta.total) + ' códigos. A lista da NF-e exclui os ' +
+        nf(meta.nfcom) + ' códigos exclusivos de prestação de serviço de comunicação, tratados na aba NFCom.'
+    });
+    montarCfop({
+      doc: 'nfcom',
+      tabela: '#nfcom-tbl', contador: '#nfcom-count', nota: '#nfcom-note',
+      q: '#nfcom-q', nat: '#nfcom-nat',
+      notaTexto: meta =>
+        'Fonte: MOC Online da NFCom, com ' + nf(meta.nfcom) + ' códigos. O 5.933 não consta da tabela do ' +
+        meta.ajuste + ' e entra como complemento declarado, com a descrição do próprio MOC.'
+    });
+  }
+
+  /* ---------- Reforma: cClassTrib, indOp, linha do tempo ---------- */
+  let refDone = false;
+  let ccAplicar = null;
+  let indFiltrar = null;
+
+  function montarCc() {
+    if (!CCLASSTRIB) return;
+    const cstSel = $('#cc-cst');
+    if (cstSel) {
+      cstSel.appendChild(new Option('Todos os CST', ''));
+      (CCLASSTRIB.cst || []).forEach(c => cstSel.appendChild(new Option(c.c + ' · ' + c.n, c.c)));
+    }
+
+    const tabela = $('#cctbl');
+    if (!tabela) return;
+    tabela.innerHTML = '<thead><tr><th>Código</th><th>CST</th><th>Nome</th><th class="th-note">Detalhe</th></tr></thead>';
+    const corpo = el('tbody');
+    const linhas = [];
+
+    (CCLASSTRIB.itens || []).forEach(item => {
+      const tr = el('tr', 'cc-row');
+      const busca = dadosBusca([
+        item.c, item.cst, item.n, item.d, item.art, item.tipo,
+        (item.docs || []).map(d => DOC_NOME[d] || d).join(' '),
+        A8.has(item.c) ? 'anexo viii' : ''
+      ]);
+      tr.dataset.search = busca.search;
+      tr.dataset.packed = busca.packed;
+
+      const tdCodigo = el('td', 'k');
+      tdCodigo.appendChild(el('span', null, item.c));
+      if (A8.has(item.c)) tdCodigo.appendChild(el('span', 'tag a8', 'Anexo VIII'));
+      tr.append(tdCodigo, el('td', 'k2', item.cst), el('td', null, item.n));
+
+      const celula = el('td', 'act');
+      const botao = el('button', 'row-toggle', 'Detalhe');
+      botao.type = 'button';
+      botao.setAttribute('aria-expanded', 'false');
+      botao.setAttribute('aria-label', 'Ver o detalhe do cClassTrib ' + item.c);
+      celula.appendChild(botao);
+      tr.appendChild(celula);
+
+      const detalhe = el('tr', 'detail-row');
+      detalhe.hidden = true;
+      const td = el('td');
+      td.colSpan = 4;
+      const dl = el('dl', 'cc-detail');
+      const add = (rotulo, valor) => {
+        if (!valor) return;
+        const linha = el('div');
+        linha.append(el('dt', null, rotulo), el('dd', null, valor));
+        dl.appendChild(linha);
+      };
+      add('Descrição', item.d);
+      add('Fundamento na LC 214/2025', item.art);
+      add('Tipo de alíquota', item.tipo);
+      const reducao = [];
+      if (item.ri) reducao.push('IBS ' + item.ri + '%');
+      if (item.rc) reducao.push('CBS ' + item.rc + '%');
+      add('Redução de alíquota', reducao.length ? reducao.join(' · ') : 'Sem redução');
+      const vigencia = item.ini ? dataBr(item.ini) + (item.fim ? ' até ' + dataBr(item.fim) : ' em diante') : '';
+      add('Vigência', vigencia);
+      add('Documentos', (item.docs || []).map(d => DOC_NOME[d] || d).join(', '));
+      td.appendChild(dl);
+      detalhe.appendChild(td);
+
+      const linha = { item, tr, detalhe, aberto: false };
+      botao.onclick = () => {
+        linha.aberto = !linha.aberto;
+        detalhe.hidden = !linha.aberto;
+        botao.setAttribute('aria-expanded', String(linha.aberto));
+        botao.textContent = linha.aberto ? 'Fechar' : 'Detalhe';
+      };
+
+      corpo.append(tr, detalhe);
+      linhas.push(linha);
+    });
+    tabela.appendChild(corpo);
+
+    const contador = $('#cc-count');
+    const total = linhas.length;
+    ccAplicar = () => {
+      const consulta = ($('#refq') || {}).value || '';
+      const cst = ($('#cc-cst') || {}).value || '';
+      const doc = ($('#cc-doc') || {}).value || '';
+      const soA8 = !!($('#cc-a8') || {}).checked;
+      let visiveis = 0;
+      linhas.forEach(linha => {
+        const ok = (!cst || linha.item.cst === cst) &&
+          (!doc || (linha.item.docs || []).includes(doc)) &&
+          (!soA8 || A8.has(linha.item.c)) &&
+          combina(consulta, { search: linha.tr.dataset.search, packed: linha.tr.dataset.packed });
+        linha.tr.hidden = !ok;
+        linha.detalhe.hidden = !ok || !linha.aberto;
+        if (ok) visiveis++;
+      });
+      if (contador) {
+        contador.textContent = (visiveis === total ? nf(total) : nf(visiveis) + ' de ' + nf(total)) + ' classificações';
+      }
+    };
+    ['#cc-cst', '#cc-doc'].forEach(sel => {
+      const campo = $(sel);
+      if (campo) { campo.addEventListener('input', ccAplicar); campo.addEventListener('change', ccAplicar); }
+    });
+    const caixa = $('#cc-a8');
+    if (caixa) caixa.addEventListener('change', ccAplicar);
+    ccAplicar();
+  }
+
+  function montarInd() {
+    const tabela = $('#indtbl');
+    if (!tabela) return;
+    tabela.innerHTML = '<thead><tr><th>indOp</th><th>Local de incidência do IBS e da CBS</th></tr></thead>';
+    const corpo = el('tbody');
     Object.keys(D.indop).sort().forEach(code => {
       const tr = el('tr');
       tr.append(el('td', 'k3', code), el('td', null, D.indop[code].l));
-      tr.dataset.search = norm(tr.textContent); tr.dataset.packed = compact(tr.textContent);
-      ib.appendChild(tr);
+      tr.dataset.search = norm(tr.textContent);
+      tr.dataset.packed = compact(tr.textContent);
+      corpo.appendChild(tr);
     });
-    it.appendChild(ib);
+    tabela.appendChild(corpo);
 
-    const t = $('#cctbl');
-    t.innerHTML = '<thead><tr><th>cClassTrib</th><th>CST</th><th>Tratamento</th><th>Nome</th><th>LC 214/25</th></tr></thead>';
-    const tb = el('tbody');
-    Object.keys(D.cclass).sort().forEach(code => {
-      const o = D.cclass[code], tr = el('tr');
-      tr.append(el('td', 'k', code), el('td', 'k2', o.cst || '—'), el('td', null, o.dcst || '—'),
-                el('td', null, o.n), el('td', 'k2', o.art || '—'));
-      tr.dataset.search = norm(tr.textContent); tr.dataset.packed = compact(tr.textContent);
-      tb.appendChild(tr);
-    });
-    t.appendChild(tb);
-    filterRef();
+    const contador = $('#ind-count');
+    const linhas = [...corpo.querySelectorAll('tr')];
+    indFiltrar = () => {
+      const consulta = ($('#refq') || {}).value || '';
+      let visiveis = 0;
+      linhas.forEach(tr => {
+        const ok = combina(consulta, { search: tr.dataset.search, packed: tr.dataset.packed });
+        tr.hidden = !ok;
+        if (ok) visiveis++;
+      });
+      if (contador) {
+        contador.textContent = (visiveis === linhas.length ? nf(linhas.length) : nf(visiveis) + ' de ' + nf(linhas.length)) + ' códigos';
+      }
+    };
+    indFiltrar();
   }
-  $('#refq').addEventListener('input', filterRef);
 
+  function renderTimeline() {
+    const box = $('#tl');
+    if (!box || !REFORMA) return;
+    const atual = new Date().getFullYear();
+    (REFORMA.linhaDoTempo || []).forEach(ano => {
+      const item = el('article', 'tl-item' + (ano.ano === atual ? ' current' : ''));
+      const cab = el('div', 'tl-head');
+      cab.appendChild(el('span', 'tl-year', String(ano.ano)));
+      cab.appendChild(el('span', 'tl-phase', ano.fase || ''));
+      if (ano.ano === atual) cab.appendChild(el('span', 'tag current-tag', 'ano corrente'));
+      item.appendChild(cab);
+
+      const taxas = el('div', 'tl-rates');
+      [['CBS', ano.cbs], ['IBS', ano.ibs], ['IS', ano.is]].forEach(([sigla, valor]) => {
+        if (!valor) return;
+        const span = el('span', 'rate');
+        span.append(el('b', null, sigla), document.createTextNode(' ' + valor));
+        taxas.appendChild(span);
+      });
+      item.appendChild(taxas);
+      item.appendChild(el('p', 'tl-summary', ano.resumo || ''));
+
+      const marcos = el('ul', 'tl-marks');
+      (ano.marcos || []).forEach(m => marcos.appendChild(el('li', null, m)));
+      item.appendChild(marcos);
+      box.appendChild(item);
+    });
+  }
+
+  function renderTributos() {
+    const box = $('#tax');
+    if (!box || !REFORMA) return;
+    (REFORMA.tributos || []).forEach(t => {
+      const card = el('article', 'tax-card');
+      const cab = el('div', 'tax-head');
+      cab.appendChild(el('span', 'tax-sigla', t.sigla));
+      const nome = el('div');
+      nome.append(el('h3', null, t.nome), el('span', 'tax-sphere', t.esfera));
+      cab.appendChild(nome);
+      card.appendChild(cab);
+
+      const dl = el('dl', 'tax-facts');
+      [['Substitui', t.substitui], ['Fato gerador', t.fatoGerador], ['Modelo', t.modelo], ['Quando', t.quando]]
+        .forEach(([rotulo, valor]) => {
+          if (!valor) return;
+          const linha = el('div');
+          linha.append(el('dt', null, rotulo), el('dd', null, valor));
+          dl.appendChild(linha);
+        });
+      card.appendChild(dl);
+      box.appendChild(card);
+    });
+  }
+
+  function renderSubstituidos() {
+    const tabela = $('#substbl');
+    if (!tabela || !REFORMA) return;
+    tabela.innerHTML = '<thead><tr><th>Sigla</th><th>Tributo</th><th>Fim</th><th>Observação</th></tr></thead>';
+    const corpo = el('tbody');
+    (REFORMA.substituidos || []).forEach(s => {
+      const tr = el('tr');
+      tr.append(el('td', 'k', s.sigla), el('td', null, s.nome), el('td', 'k2', s.fim || '—'), el('td', null, s.obs || ''));
+      corpo.appendChild(tr);
+    });
+    tabela.appendChild(corpo);
+  }
+
+  function renderMudancas() {
+    const box = $('#mud');
+    if (!box || !REFORMA) return;
+    (REFORMA.mudancas || []).forEach(m => {
+      const card = el('article', 'change-card');
+      card.append(el('h3', null, m.titulo), el('p', null, m.texto));
+      box.appendChild(card);
+    });
+  }
+
+  function renderPrazos() {
+    const lista = $('#prazos');
+    if (!lista || !REFORMA) return;
+    (REFORMA.prazos || []).forEach(p => {
+      const item = el('li', 'prazo');
+      const data = el('time', 'prazo-date', dataBr(p.data));
+      data.dateTime = p.data;
+      const corpo = el('div', 'prazo-body');
+      corpo.append(el('h3', null, p.titulo), el('p', null, p.detalhe || ''));
+      item.append(data, corpo);
+      lista.appendChild(item);
+    });
+  }
+
+  function renderGlossario() {
+    const dl = $('#gloss');
+    if (!dl || !REFORMA) return;
+    (REFORMA.glossario || []).forEach(g => {
+      const item = el('div', 'gloss-item');
+      item.append(el('dt', null, g.termo), el('dd', null, g.definicao));
+      dl.appendChild(item);
+    });
+  }
+
+  function renderRef() {
+    if (refDone) return;
+    refDone = true;
+    renderTimeline();
+    renderTributos();
+    renderSubstituidos();
+    renderMudancas();
+    renderPrazos();
+    montarInd();
+    montarCc();
+    renderGlossario();
+  }
+
+  const refq = $('#refq');
+  if (refq) {
+    refq.addEventListener('input', () => {
+      if (indFiltrar) indFiltrar();
+      if (ccAplicar) ccAplicar();
+    });
+  }
+
+  const PANELS = { fluxo: '#p-fluxo', nfe: '#p-nfe', nfcom: '#p-nfcom', reforma: '#p-reforma', fontes: '#p-fontes' };
   function activateTab(t, scroll = true) {
       document.querySelectorAll('.tab').forEach(x => {
         x.setAttribute('aria-selected', String(x === t));
         x.tabIndex = x === t ? 0 : -1;
       });
-      $('#p-fluxo').hidden = t.dataset.tab !== 'fluxo';
-      $('#p-ref').hidden = t.dataset.tab !== 'ref';
-      if (t.dataset.tab === 'ref') renderRef(); else wireUp();
-      syncUrl(t.dataset.tab);
-      if (scroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+      const key = t.dataset.tab;
+      Object.entries(PANELS).forEach(([name, sel]) => { $(sel).hidden = name !== key; });
+      document.documentElement.dataset.view = key;
+      syncHeader();
+      if (key === 'reforma') renderRef();
+      else if (key === 'nfe' || key === 'nfcom') renderCfop();
+      else if (key === 'fluxo') wireUp();
+      syncUrl(key);
+      if (scroll) window.scrollTo({ top: 0, behavior: 'auto' });
   }
   const tabs = [...document.querySelectorAll('.tab')];
   tabs.forEach((t, index) => {
@@ -584,18 +998,99 @@
     };
   });
   $('#open-sources').onclick = () => {
-    const refTab = $('#tab-ref'); activateTab(refTab, false);
-    requestAnimationFrame(() => $('#s-fontes').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    activateTab($('#tab-fontes'), false);
+    scrollToSection($('#s-fontes'));
   };
+
+  /* ---------- navegação vinda do portal ---------- */
+  function headerOffset() {
+    const h = document.querySelector('header.top');
+    const height = h ? Math.round(h.getBoundingClientRect().height) : 0;
+    document.documentElement.style.setProperty('--hdr', height + 'px');
+    return height + 14;
+  }
+  function scrollToSection(dest) {
+    if (!dest) return;
+    const top = Math.max(0, dest.getBoundingClientRect().top + window.scrollY - headerOffset());
+    window.scrollTo({ top, behavior: 'auto' });
+  }
+  function goto(target) {
+    const name = target || 'fluxo';
+    const direct = { fluxo: '#tab-fluxo', nfe: '#tab-nfe', nfcom: '#tab-nfcom', reforma: '#tab-reforma', fontes: '#tab-fontes' };
+    if (direct[name]) {
+      activateTab($(direct[name]), false);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
+    }
+    const dest = document.getElementById(name);
+    if (!dest) return;
+    const panel = dest.closest('[role="tabpanel"]');
+    const tabId = panel ? panel.getAttribute('aria-labelledby') : '';
+    const tab = tabId ? document.getElementById(tabId) : null;
+    if (tab) activateTab(tab, false);
+    scrollToSection(dest);
+  }
+  window.addEventListener('message', event => {
+    const data = event.data || {};
+    if (data.type === 'nexo:goto') goto(data.target);
+    else if (data.type === 'nexo:theme') applyTheme(data.theme, false);
+  });
+
+  /* ---------- catálogo de fontes oficiais ---------- */
+  let fontesDone = false;
+  function renderFontes() {
+    if (fontesDone) return; fontesDone = true;
+    const grid = $('#official-source-grid'), empty = $('#official-source-empty'), q = $('#official-source-q');
+    const list = (FONTES && Array.isArray(FONTES.fontes)) ? FONTES.fontes : [];
+    if (!grid || !list.length) { const box = $('#official-catalog'); if (box) box.hidden = true; return; }
+    const note = $('#official-source-note'), foot = $('#official-source-foot');
+    if (note && FONTES) {
+      note.textContent = '';
+      if (FONTES.criterioDeUso) note.append(el('strong', null, 'Critério de uso: '), document.createTextNode(FONTES.criterioDeUso));
+      const rules = Array.isArray(FONTES.regrasDeGovernanca) ? FONTES.regrasDeGovernanca : [];
+      if (rules.length) {
+        const ul = el('ul', 'of-rules');
+        rules.forEach(r => ul.appendChild(el('li', null, r)));
+        note.appendChild(ul);
+      }
+    }
+    if (foot && FONTES && FONTES.atualizadoEm) {
+      const parts = String(FONTES.atualizadoEm).split('-');
+      const date = parts.length === 3 ? parts[2] + '/' + parts[1] + '/' + parts[0] : FONTES.atualizadoEm;
+      foot.textContent = 'Catálogo atualizado em ' + date + '. Os links abrem a publicação original; confirme os documentos antes de uso fiscal operacional.';
+    }
+    list.forEach(f => {
+      const card = el('article', 'of-card');
+      const meta = el('div', 'of-meta');
+      meta.append(el('span', 'of-model', f.modelo || ''), el('span', 'of-status', f.statusConsulta || ''));
+      const link = el('a', null, 'Abrir fonte oficial ↗');
+      link.href = f.url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+      card.append(meta, el('h4', null, f.titulo || ''), el('p', null, f.detalhe || f.tipo || ''), link);
+      card.dataset.search = norm([f.modelo, f.grupo, f.titulo, f.detalhe || f.tipo, f.statusConsulta].join(' '));
+      grid.appendChild(card);
+    });
+    function applyFontes() {
+      const queryTerms = terms(q ? q.value : '');
+      let shown = 0;
+      [...grid.children].forEach(card => {
+        const text = card.dataset.search || '', packed = compact(text);
+        const match = !queryTerms.length || queryTerms.every(term => text.includes(term) || packed.includes(compact(term)));
+        card.hidden = !match; if (match) shown++;
+      });
+      if (empty) empty.hidden = shown !== 0;
+    }
+    if (q) q.addEventListener('input', applyFontes);
+    applyFontes();
+  }
   document.querySelectorAll('.jump a').forEach(a => {
     a.onclick = e => {
       e.preventDefault();
-      const el2 = document.querySelector(a.getAttribute('href'));
-      if (el2) el2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      scrollToSection(document.querySelector(a.getAttribute('href')));
     };
   });
 
-  renderLocSel(); renderGrpSel(); renderCcSel(); apply(); renderList(); renderDetail();
-  const initialTab = urlInicial.searchParams.get('tab') === 'ref' ? $('#tab-ref') : $('#tab-fluxo');
+  renderLocSel(); renderGrpSel(); renderCcSel(); apply(); renderList(); renderDetail(); renderFontes();
+  const initialView = urlInicial.searchParams.get('tab');
+  const initialTab = { nfe: $('#tab-nfe'), nfcom: $('#tab-nfcom'), reforma: $('#tab-reforma'), fontes: $('#tab-fontes') }[initialView] || $('#tab-fluxo');
   activateTab(initialTab, false);
 })();

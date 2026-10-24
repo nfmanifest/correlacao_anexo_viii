@@ -26,13 +26,28 @@ def main() -> None:
     css = (WEB / "app.css").read_text(encoding="utf-8")
     js = (WEB / "app.js").read_text(encoding="utf-8")
     dados = (WEB / "data" / "anexo8.json").read_text(encoding="utf-8")
+    fontes = (WEB / "data" / "fontes-oficiais.json").read_text(encoding="utf-8")
+    cfop = (WEB / "data" / "cfop.json").read_text(encoding="utf-8")
+    cclasstrib = (WEB / "data" / "cclasstrib.json").read_text(encoding="utf-8")
+    reforma = (WEB / "data" / "reforma.json").read_text(encoding="utf-8")
 
-    # O JSON entra dentro de <script>, então qualquer '</' precisa ser escapado.
+    # Os JSON entram dentro de <script>, então qualquer '</' precisa ser escapado.
     dados = dados.replace("</", "<\\/")
+    fontes = fontes.replace("</", "<\\/")
+    cfop = cfop.replace("</", "<\\/")
+    cclasstrib = cclasstrib.replace("</", "<\\/")
+    reforma = reforma.replace("</", "<\\/")
 
     html, css_trocas = TAG_CSS.subn(lambda _: f"<style>\n{css}</style>", html)
     html, js_trocas = TAG_JS.subn(
-        lambda _: f"<script>window.__ANEXO8__ = {dados};</script>\n<script>\n{js}</script>", html
+        lambda _: (
+            f"<script>window.__ANEXO8__ = {dados};"
+            f"window.__FONTES__ = {fontes};"
+            f"window.__CFOP__ = {cfop};"
+            f"window.__CCLASSTRIB__ = {cclasstrib};"
+            f"window.__REFORMA__ = {reforma};</script>\n<script>\n{js}</script>"
+        ),
+        html,
     )
     if css_trocas != 1 or js_trocas != 1:
         sys.exit("index.html mudou: não foi possível localizar os arquivos CSS e JS para empacotar.")

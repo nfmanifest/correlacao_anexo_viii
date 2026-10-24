@@ -1,0 +1,272 @@
+{
+  "meta": {
+    "atualizadoEm": "2026-10-24",
+    "titulo": "Reforma Tributária do Consumo",
+    "aviso": "Conteúdo de referência. Datas e regras seguem as publicações oficiais listadas em fontes; confirme a vigência antes de uso fiscal operacional.",
+    "fontes": [
+      {
+        "titulo": "Receita Federal — Entenda a Reforma Tributária do Consumo",
+        "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo/entenda"
+      },
+      {
+        "titulo": "Receita Federal — Reforma Tributária do Consumo",
+        "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo"
+      },
+      {
+        "titulo": "LC 214/2025 — Planalto",
+        "url": "https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm"
+      }
+    ]
+  },
+  "linhaDoTempo": [
+    {
+      "ano": 2026,
+      "fase": "Ano-teste",
+      "cbs": "0,9%",
+      "ibs": "0,1%",
+      "is": "—",
+      "resumo": "CBS e IBS passam a ser destacados nos documentos fiscais, em caráter de teste. O valor recolhido é compensado com o que for devido de PIS e COFINS no mesmo período.",
+      "marcos": [
+        "Destaque da CBS e do IBS nos documentos fiscais.",
+        "Compensação do valor arrecadado com PIS e COFINS.",
+        "Arrecadação isenta para quem cumprir as obrigações acessórias do período."
+      ]
+    },
+    {
+      "ano": 2027,
+      "fase": "CBS cheia e início do IS",
+      "cbs": "Alíquota de referência, menos 0,1 p.p.",
+      "ibs": "0,1%",
+      "is": "Início",
+      "resumo": "A CBS entra em vigor com a alíquota de referência e o Imposto Seletivo é instituído. PIS e COFINS deixam de existir.",
+      "marcos": [
+        "Extinção do PIS e da COFINS.",
+        "Alíquota do IPI reduzida a zero, exceto para produtos também industrializados na Zona Franca de Manaus.",
+        "Instituição do Imposto Seletivo."
+      ]
+    },
+    {
+      "ano": 2028,
+      "fase": "CBS cheia e IBS em teste",
+      "cbs": "Alíquota de referência, menos 0,1 p.p.",
+      "ibs": "0,1%",
+      "is": "Em vigor",
+      "resumo": "Segundo ano de CBS em alíquota cheia, com o IBS ainda em 0,1%.",
+      "marcos": [
+        "Consolidação da CBS como tributo federal sobre o consumo.",
+        "IBS mantido em alíquota reduzida de teste."
+      ]
+    },
+    {
+      "ano": 2029,
+      "fase": "Transição ICMS/ISS → IBS",
+      "cbs": "Alíquota de referência",
+      "ibs": "10%",
+      "is": "Em vigor",
+      "resumo": "Começa a substituição gradual do ICMS e do ISS pelo IBS.",
+      "marcos": [
+        "10% da carga passa a ser cobrada pelo IBS.",
+        "90% da carga permanece no ICMS e no ISS."
+      ]
+    },
+    {
+      "ano": 2030,
+      "fase": "Transição ICMS/ISS → IBS",
+      "cbs": "Alíquota de referência",
+      "ibs": "20%",
+      "is": "Em vigor",
+      "resumo": "Segundo ano da transição, com aumento gradual da alíquota do IBS.",
+      "marcos": [
+        "20% da carga passa a ser cobrada pelo IBS.",
+        "80% da carga permanece no ICMS e no ISS."
+      ]
+    },
+    {
+      "ano": 2031,
+      "fase": "Transição ICMS/ISS → IBS",
+      "cbs": "Alíquota de referência",
+      "ibs": "30%",
+      "is": "Em vigor",
+      "resumo": "Terceiro ano da transição.",
+      "marcos": [
+        "30% da carga passa a ser cobrada pelo IBS.",
+        "70% da carga permanece no ICMS e no ISS."
+      ]
+    },
+    {
+      "ano": 2032,
+      "fase": "Transição ICMS/ISS → IBS",
+      "cbs": "Alíquota de referência",
+      "ibs": "40%",
+      "is": "Em vigor",
+      "resumo": "Último ano da transição antes do modelo integral.",
+      "marcos": [
+        "40% da carga passa a ser cobrada pelo IBS.",
+        "60% da carga permanece no ICMS e no ISS."
+      ]
+    },
+    {
+      "ano": 2033,
+      "fase": "Modelo integral",
+      "cbs": "Alíquota de referência",
+      "ibs": "Alíquota de referência",
+      "is": "Em vigor",
+      "resumo": "O novo modelo passa a vigorar integralmente e o ICMS e o ISS são extintos.",
+      "marcos": [
+        "Vigência integral do IBS e da CBS.",
+        "Extinção do ICMS e do ISS."
+      ]
+    }
+  ],
+  "tributos": [
+    {
+      "sigla": "CBS",
+      "nome": "Contribuição sobre Bens e Serviços",
+      "esfera": "Federal",
+      "substitui": "PIS e COFINS",
+      "fatoGerador": "Fornecimento de bens e serviços no país.",
+      "modelo": "Não cumulativa, com crédito financeiro amplo e cobrança no destino.",
+      "quando": "Teste em 2026; alíquota cheia a partir de 2027."
+    },
+    {
+      "sigla": "IBS",
+      "nome": "Imposto sobre Bens e Serviços",
+      "esfera": "Estadual e municipal",
+      "substitui": "ICMS e ISS",
+      "fatoGerador": "Fornecimento de bens e serviços no país.",
+      "modelo": "Mesmo modelo da CBS, com competência compartilhada entre estados e municípios.",
+      "quando": "0,1% em 2026 e 2027-2028; transição de 2029 a 2032; integral em 2033."
+    },
+    {
+      "sigla": "IS",
+      "nome": "Imposto Seletivo",
+      "esfera": "Federal",
+      "substitui": "Não substitui tributo existente",
+      "fatoGerador": "Produção, extração, comercialização ou importação de bens e serviços prejudiciais à saúde ou ao meio ambiente, definidos em lei.",
+      "modelo": "Seletivo, com alíquotas próprias por item.",
+      "quando": "A partir de 2027."
+    }
+  ],
+  "substituidos": [
+    {
+      "sigla": "PIS",
+      "nome": "Programa de Integração Social",
+      "fim": "2027",
+      "obs": "Substituído pela CBS."
+    },
+    {
+      "sigla": "COFINS",
+      "nome": "Contribuição para Financiamento da Seguridade Social",
+      "fim": "2027",
+      "obs": "Substituída pela CBS."
+    },
+    {
+      "sigla": "IPI",
+      "nome": "Imposto sobre Produtos Industrializados",
+      "fim": "2027",
+      "obs": "Alíquota reduzida a zero, exceto para produtos também industrializados na Zona Franca de Manaus."
+    },
+    {
+      "sigla": "ICMS",
+      "nome": "Imposto sobre Circulação de Mercadorias e Serviços",
+      "fim": "2033",
+      "obs": "Transição para o IBS entre 2029 e 2032."
+    },
+    {
+      "sigla": "ISS",
+      "nome": "Imposto sobre Serviços de Qualquer Natureza",
+      "fim": "2033",
+      "obs": "Transição para o IBS entre 2029 e 2032."
+    }
+  ],
+  "mudancas": [
+    {
+      "titulo": "Não cumulatividade plena",
+      "texto": "O crédito passa a acompanhar toda a cadeia, reduzindo o efeito em cascata e a cumulatividade."
+    },
+    {
+      "titulo": "Tributação no destino",
+      "texto": "O imposto é devido no local do consumo, e não no local de origem da operação."
+    },
+    {
+      "titulo": "Base ampla e alíquotas uniformes",
+      "texto": "Menos exceções e alíquotas mais parecidas entre setores, com regimes específicos previstos em lei."
+    },
+    {
+      "titulo": "Desoneração das exportações",
+      "texto": "As exportações deixam de carregar resíduo tributário, alinhando o país às regras do comércio internacional."
+    },
+    {
+      "titulo": "Split payment",
+      "texto": "O recolhimento pode ser separado no momento do pagamento, com o valor do tributo segregado da liquidação financeira."
+    },
+    {
+      "titulo": "Cashback",
+      "texto": "Devolução de parte do tributo para famílias de baixa renda, conforme critérios definidos na legislação."
+    },
+    {
+      "titulo": "Imposto Seletivo",
+      "texto": "Tributação extra sobre bens e serviços prejudiciais à saúde ou ao meio ambiente."
+    },
+    {
+      "titulo": "Regimes específicos e Zona Franca de Manaus",
+      "texto": "Setores e territórios com regras próprias preservam incentivos e condições de competitividade durante a transição."
+    }
+  ],
+  "prazos": [
+    {
+      "data": "2026-01-01",
+      "titulo": "Início do ano-teste",
+      "detalhe": "Destaque de CBS (0,9%) e IBS (0,1%) nos documentos fiscais, com compensação em PIS e COFINS."
+    },
+    {
+      "data": "2027-01-01",
+      "titulo": "CBS cheia, fim de PIS/COFINS e início do IS",
+      "detalhe": "IPI vai a zero, exceto na ZFM; Imposto Seletivo passa a ser cobrado."
+    },
+    {
+      "data": "2029-01-01",
+      "titulo": "Início da transição do ICMS e do ISS",
+      "detalhe": "10% da carga migra para o IBS; 90% permanece no ICMS e no ISS."
+    },
+    {
+      "data": "2030-01-01",
+      "titulo": "Segundo ano da transição",
+      "detalhe": "20% no IBS e 80% no ICMS e no ISS."
+    },
+    {
+      "data": "2031-01-01",
+      "titulo": "Terceiro ano da transição",
+      "detalhe": "30% no IBS e 70% no ICMS e no ISS."
+    },
+    {
+      "data": "2032-01-01",
+      "titulo": "Último ano da transição",
+      "detalhe": "40% no IBS e 60% no ICMS e no ISS."
+    },
+    {
+      "data": "2033-01-01",
+      "titulo": "Modelo integral",
+      "detalhe": "IBS e CBS em vigor pleno; ICMS e ISS extintos."
+    }
+  ],
+  "glossario": [
+    { "termo": "CBS", "definicao": "Contribuição federal sobre bens e serviços, que substitui PIS e COFINS." },
+    { "termo": "IBS", "definicao": "Imposto sobre bens e serviços de competência compartilhada entre estados e municípios, que substitui ICMS e ISS." },
+    { "termo": "IS", "definicao": "Imposto Seletivo federal sobre bens e serviços prejudiciais à saúde ou ao meio ambiente." },
+    { "termo": "CST", "definicao": "Código de Situação Tributária: indica o tratamento tributário aplicado na operação." },
+    { "termo": "cClassTrib", "definicao": "Código de Classificação Tributária do IBS e da CBS, usado junto com o CST para detalhar o tratamento." },
+    { "termo": "indOp", "definicao": "Código indicador de operação que determina o local de incidência do IBS e da CBS." },
+    { "termo": "NBS", "definicao": "Nomenclatura Brasileira de Serviços, usada para identificar o serviço prestado." },
+    { "termo": "Não cumulatividade", "definicao": "Mecanismo que permite descontar o tributo pago nas etapas anteriores da cadeia." },
+    { "termo": "Split payment", "definicao": "Separação do tributo no momento do pagamento, com recolhimento automático ao fisco." },
+    { "termo": "Cashback", "definicao": "Devolução de parte do tributo para famílias de baixa renda." },
+    { "termo": "Alíquota de referência", "definicao": "Alíquota parâmetro definida na legislação para o IBS e a CBS, sujeita a revisão." },
+    { "termo": "Contribuinte exclusivo do IBS/CBS", "definicao": "Contribuinte que apura apenas o IBS e a CBS, sem os tributos substituídos." },
+    { "termo": "Crédito presumido", "definicao": "Crédito calculado por presunção, sem exigir a comprovação do tributo pago na etapa anterior." },
+    { "termo": "Diferimento", "definicao": "Postergação do recolhimento do tributo para uma etapa posterior da cadeia." },
+    { "termo": "Monofásico", "definicao": "Regime em que o tributo é cobrado uma única vez na cadeia, em etapa definida." },
+    { "termo": "Zona Franca de Manaus", "definicao": "Área com regime tributário próprio, preservado durante a transição." },
+    { "termo": "Simples Nacional", "definicao": "Regime simplificado mantido, com possibilidade de opção pelo regime regular do IBS e da CBS." }
+  ]
+}
