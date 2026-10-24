@@ -1,0 +1,3 @@
+# O arquivo único é gerado com LF. Fixar a saída evita que o autocrlf do
+# Windows reinfla o artefato com CRLF e estoure o limite de tamanho.
+dist/*.html text eol=lf

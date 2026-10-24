@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="pt-BR" data-ui-version="2026-09-19.2">
+<html lang="pt-BR" data-ui-version="2026-10-24.4">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>try{var t=localStorage.getItem('nexo-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
 <title>Correlação NFS — Anexo VIII, IBS e CBS</title>
 <meta name="description" content="Correlação NFS: consulte o Anexo VIII entre subitem da LC 116, NBS, indOp e cClassTrib do IBS e da CBS.">
 <meta name="robots" content="noindex, nofollow">
@@ -10,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="app.css?v=2026-09-19.2">
+<link rel="stylesheet" href="app.css?v=2026-10-24.4">
 </head>
 <body>
 <header class="top">
@@ -19,7 +20,7 @@
       <h1>Correlação NFS</h1>
       <span class="version-cluster">
         <span class="ver">v1.01.00</span>
-        <button type="button" class="version-help" id="open-sources" aria-label="Entender as versões dos Anexos VII e VIII" title="Entender as versões dos Anexos VII e VIII">!</button>
+        <button type="button" class="version-help" id="open-sources" aria-label="Abrir as fontes oficiais" title="Abrir as fontes oficiais">!</button>
       </span>
       <span class="sub">Encontre a correlação entre o serviço prestado, o local de incidência e a classificação tributária.</span>
     </div>
@@ -32,9 +33,15 @@
       <span class="ar">→</span>
       <span class="t" style="--lc:var(--n4)"><b>cClassTrib</b><i>código de classificação tributária do IBS e da CBS</i></span>
     </div>
-    <div class="tabs" role="tablist" aria-label="Áreas da consulta">
-      <button class="tab" id="tab-fluxo" role="tab" aria-selected="true" aria-controls="p-fluxo" tabindex="0" data-tab="fluxo">Consultar correlações</button>
-      <button class="tab" id="tab-ref" role="tab" aria-selected="false" aria-controls="p-ref" tabindex="-1" data-tab="ref">Tabelas de apoio e fontes</button>
+    <div class="tabbar">
+      <div class="tabs" role="tablist" aria-label="Áreas da consulta">
+        <button class="tab" id="tab-fluxo" role="tab" aria-selected="true" aria-controls="p-fluxo" tabindex="0" data-tab="fluxo">Consultar correlações</button>
+        <button class="tab" id="tab-nfe" role="tab" aria-selected="false" aria-controls="p-nfe" tabindex="-1" data-tab="nfe">NF-e 55</button>
+        <button class="tab" id="tab-nfcom" role="tab" aria-selected="false" aria-controls="p-nfcom" tabindex="-1" data-tab="nfcom">NFCom 62</button>
+        <button class="tab" id="tab-reforma" role="tab" aria-selected="false" aria-controls="p-reforma" tabindex="-1" data-tab="reforma">Reforma Tributária</button>
+        <button class="tab" id="tab-fontes" role="tab" aria-selected="false" aria-controls="p-fontes" tabindex="-1" data-tab="fontes">Fontes oficiais</button>
+      </div>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Ativar tema claro">☼ Tema claro</button>
     </div>
   </div>
 </header>
@@ -74,19 +81,143 @@
     </div>
   </section>
 
-  <section id="p-ref" role="tabpanel" aria-labelledby="tab-ref" hidden>
+  <section id="p-nfe" role="tabpanel" aria-labelledby="tab-nfe" hidden>
+    <div class="doc-intro">
+      <div class="doc-head">
+        <span class="doc-badge">55</span>
+        <div>
+          <h2>NF-e — Nota Fiscal Eletrônica</h2>
+          <p>Documento fiscal eletrônico que registra a circulação de mercadorias e as prestações de serviço a ela vinculadas. É o documento do modelo 55, usado por indústria, comércio e demais contribuintes do ICMS.</p>
+        </div>
+      </div>
+      <dl class="doc-facts">
+        <div><dt>Modelo</dt><dd>55</dd></div>
+        <div><dt>Uso</dt><dd>Mercadorias e serviços vinculados</dd></div>
+        <div><dt>CFOP</dt><dd>Natureza da operação</dd></div>
+        <div><dt>Outros campos</dt><dd>NCM, CST/CSOSN, IBS e CBS</dd></div>
+      </dl>
+    </div>
+
+    <div class="sec">
+      <h2>CFOP usados na NF-e</h2>
+      <p class="cap">O CFOP tem quatro dígitos: o primeiro indica o grupo (entrada ou saída, mesma UF, outra UF ou exterior) e os demais, a natureza da operação. A lista abaixo parte da tabela do Ajuste SINIEF 07/01 e exclui os códigos de prestação de serviço de comunicação, tratados na NFCom.</p>
+      <div class="list-toolbar">
+        <label class="field" for="nfe-q"><span>Buscar código ou descrição</span><input id="nfe-q" class="search" type="search" placeholder="5102, venda, industrialização…" autocomplete="off"></label>
+        <label class="field" for="nfe-g"><span>Grupo</span><select id="nfe-g" class="search sel"></select></label>
+        <label class="field" for="nfe-nat"><span>Natureza</span><select id="nfe-nat" class="search sel"><option value="">Entradas e saídas</option><option value="e">Entradas</option><option value="s">Saídas</option></select></label>
+      </div>
+      <p class="table-count" id="nfe-count" aria-live="polite"></p>
+      <div class="tblwrap"><table class="data cfop-table" id="nfe-tbl"></table></div>
+      <p class="src-note" id="nfe-note"></p>
+    </div>
+  </section>
+
+  <section id="p-nfcom" role="tabpanel" aria-labelledby="tab-nfcom" hidden>
+    <div class="doc-intro">
+      <div class="doc-head">
+        <span class="doc-badge">62</span>
+        <div>
+          <h2>NFCom — Nota Fiscal Fatura de Serviço de Comunicação Eletrônica</h2>
+          <p>Documento do modelo 62, emitido por prestadores de serviço de comunicação. Substitui a NF-e na documentação desse serviço e tem leiaute próprio, com informações do assinante e dos recursos de comunicação.</p>
+        </div>
+      </div>
+      <dl class="doc-facts">
+        <div><dt>Modelo</dt><dd>62</dd></div>
+        <div><dt>Uso</dt><dd>Serviços de comunicação</dd></div>
+        <div><dt>CFOP</dt><dd>17 códigos publicados no MOC</dd></div>
+        <div><dt>Base</dt><dd>MOC NFCom 1.00a</dd></div>
+      </dl>
+    </div>
+
+    <div class="sec">
+      <h2>CFOP válidos para NFCom</h2>
+      <p class="cap">São os códigos publicados na seção “Tabelas e Códigos” do MOC Online da NFCom. O <b>1.205</b> registra anulação de valor; os grupos <b>5.3xx</b> e <b>6.3xx</b> cobrem a prestação no estado e em outra UF; o <b>7.301</b>, a prestação para o exterior.</p>
+      <div class="list-toolbar">
+        <label class="field" for="nfcom-q"><span>Buscar código ou descrição</span><input id="nfcom-q" class="search" type="search" placeholder="5.301, comunicação, ISSQN…" autocomplete="off"></label>
+        <label class="field" for="nfcom-nat"><span>Natureza</span><select id="nfcom-nat" class="search sel"><option value="">Entradas e saídas</option><option value="e">Entradas</option><option value="s">Saídas</option></select></label>
+      </div>
+      <p class="table-count" id="nfcom-count" aria-live="polite"></p>
+      <div class="tblwrap"><table class="data cfop-table" id="nfcom-tbl"></table></div>
+      <p class="src-note" id="nfcom-note"></p>
+    </div>
+
+    <div class="sec" id="s-cclass">
+      <h2>cClass: classificação dos itens</h2>
+      <p class="cap">O <b>cClass</b> identifica o item faturado na NFCom: grupos de 3 dígitos carregam os indicadores e itens de 7 dígitos detalham o serviço. Não confundir com o <b>cClassTrib</b>, que classifica o tratamento do IBS e da CBS e fica na aba Reforma Tributária.</p>
+      <div class="list-toolbar two">
+        <label class="field" for="cclass-q"><span>Buscar código ou descrição</span><input id="cclass-q" class="search" type="search" placeholder="0100101, assinatura, fibra…" autocomplete="off"></label>
+        <label class="field" for="cclass-g"><span>Grupo</span><select id="cclass-g" class="search sel"></select></label>
+      </div>
+      <p class="table-count" id="cclass-count" aria-live="polite"></p>
+      <div class="tblwrap"><table class="data cclass-table" id="cclass-tbl"></table></div>
+      <p class="src-note" id="cclass-note"></p>
+    </div>
+
+    <div class="sec">
+      <h2>O que muda em relação à NF-e</h2>
+      <div class="change-grid">
+        <div class="change-card"><h3>CFOP próprio</h3><p>A prestação de serviço de comunicação usa a série 5.301 a 5.307, 6.301 a 6.307 e 7.301, em vez dos códigos de mercadoria.</p></div>
+        <div class="change-card"><h3>Leiaute específico</h3><p>O documento traz informações do assinante e dos recursos de comunicação, que não existem na NF-e.</p></div>
+        <div class="change-card"><h3>Documento único</h3><p>A NFCom concentra a fatura do serviço; a NF-e continua sendo usada para mercadorias e serviços vinculados.</p></div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="p-reforma" role="tabpanel" aria-labelledby="tab-reforma" hidden>
     <div class="ref-intro">
       <div>
-        <h2>Referências para interpretar a consulta</h2>
-        <p>Use as tabelas abaixo para conferir o significado dos códigos apresentados no fluxo.</p>
+        <h2>Reforma Tributária do Consumo</h2>
+        <p>Prazos, tributos, mudanças e as tabelas de código usadas nos documentos fiscais.</p>
       </div>
       <label class="ref-search" for="refq"><span>Pesquisar nas tabelas</span><input id="refq" type="search" placeholder="Código, local, tratamento ou artigo…" autocomplete="off"></label>
     </div>
     <div class="jump">
-      <a href="#s-ind">indOp e local de incidência</a>
-      <a href="#s-x">Regra do inciso X</a>
-      <a href="#s-cc">cClassTrib e CST</a>
-      <a href="#s-fontes">Fontes e ressalvas</a>
+      <a href="#s-tempo">Linha do tempo</a>
+      <a href="#s-trib">Tributos</a>
+      <a href="#s-lc214">LC 214</a>
+      <a href="#s-mud">Mudanças</a>
+      <a href="#s-prazos">Prazos</a>
+      <a href="#s-cc">cClassTrib</a>
+      <a href="#s-ind">indOp</a>
+      <a href="#s-x">Inciso X</a>
+      <a href="#s-gloss">Glossário</a>
+    </div>
+
+    <div class="sec" id="s-tempo">
+      <h2>Linha do tempo: 2026 a 2033</h2>
+      <p class="cap">Cronograma publicado pela Receita Federal. O ano corrente aparece destacado.</p>
+      <div class="timeline" id="tl"></div>
+    </div>
+
+    <div class="sec" id="s-trib">
+      <h2>Os tributos que passam a existir</h2>
+      <p class="cap">CBS e IBS seguem o modelo de imposto sobre valor agregado; o IS é seletivo e incide sobre itens definidos em lei.</p>
+      <div class="tax-grid" id="tax"></div>
+    </div>
+
+    <div class="sec" id="s-lc214">
+      <h2>O que a LC 214/2025 fixa</h2>
+      <p class="cap">Regras que a lei complementar detalha além do cronograma: Imposto Seletivo, cashback, reduções de alíquota, regimes específicos, split payment, Simples Nacional e Zona Franca de Manaus. Cada item cita o artigo.</p>
+      <p class="table-count" id="lc214-count" aria-live="polite"></p>
+      <div class="change-grid" id="lc214"></div>
+      <p class="src-note" id="lc214-note"></p>
+    </div>
+
+    <div class="sec" id="s-subs">
+      <h2>O que deixa de existir</h2>
+      <p class="cap">PIS, COFINS, ICMS e ISS são extintos; o IPI é reduzido a zero, com exceção da Zona Franca de Manaus.</p>
+      <div class="tblwrap"><table class="data" id="substbl"></table></div>
+    </div>
+
+    <div class="sec" id="s-mud">
+      <h2>Mudanças principais</h2>
+      <div class="change-grid" id="mud"></div>
+    </div>
+
+    <div class="sec" id="s-prazos">
+      <h2>Prazos e obrigações</h2>
+      <ol class="prazo-list" id="prazos"></ol>
     </div>
 
     <div class="sec" id="s-ind">
@@ -112,15 +243,45 @@
     </div>
 
     <div class="sec" id="s-cc">
-      <h2>cClassTrib, com o CST e o tratamento de cada um</h2>
-      <p class="cap">O CST e o tratamento vêm da tabela oficial de classificação tributária do IBS e da CBS. A NFS-e exige os dois campos juntos.</p>
+      <h2>cClassTrib: o que é cada código</h2>
+      <p class="cap">O CST indica o tratamento tributário e o cClassTrib detalha a situação. A tabela traz os códigos da planilha oficial IT 2025.002 v.1.70; clique em uma linha para ver a descrição, o fundamento legal e a vigência.</p>
+      <div class="list-toolbar cc-toolbar">
+        <label class="field" for="cc-cst"><span>CST</span><select id="cc-cst" class="search sel"></select></label>
+        <label class="field" for="cc-doc"><span>Documento</span><select id="cc-doc" class="search sel"><option value="">Todos os documentos</option><option value="nfse">NFS-e</option><option value="nfe">NF-e</option><option value="nfcom">NFCom</option></select></label>
+        <label class="check" for="cc-a8"><input type="checkbox" id="cc-a8"> <span>Somente os 28 do Anexo VIII</span></label>
+      </div>
       <p class="table-count" id="cc-count" aria-live="polite"></p>
-      <div class="tblwrap"><table class="data" id="cctbl"></table></div>
+      <div class="tblwrap"><table class="data cc-table" id="cctbl"></table></div>
     </div>
 
+    <div class="sec" id="s-gloss">
+      <h2>Glossário</h2>
+      <p class="cap">Termos que aparecem na consulta e nos documentos fiscais.</p>
+      <dl class="gloss" id="gloss"></dl>
+    </div>
+  </section>
+
+  <section id="p-fontes" role="tabpanel" aria-labelledby="tab-fontes" hidden>
     <div class="sec" id="s-fontes">
-      <h2>Fontes, versão e limites da consulta</h2>
+      <h2>Fontes oficiais, versão e limites da consulta</h2>
       <p class="cap">A página reorganiza os arquivos oficiais para facilitar a leitura. Ela não cria correlações nem substitui a validação da legislação aplicável ao caso concreto.</p>
+
+      <div class="official-catalog" id="official-catalog" data-nexo-slot="catalog">
+        <div class="of-head">
+          <div>
+            <h3>Catálogo de MOCs e documentação oficial</h3>
+            <p>Índice de fontes oficiais para consulta. Os links abrem a publicação original; a presença no catálogo não significa que todos os arquivos foram baixados ou que cada versão foi homologada.</p>
+          </div>
+          <label class="of-search" for="official-source-q"><span>Pesquisar fontes</span>
+            <input id="official-source-q" type="search" placeholder="Modelo, MOC, schema, RTC…" autocomplete="off">
+          </label>
+        </div>
+        <div class="of-note" id="official-source-note"></div>
+        <div class="of-grid" id="official-source-grid"></div>
+        <p class="of-empty" id="official-source-empty" hidden>Nenhuma fonte corresponde à pesquisa.</p>
+        <p class="of-foot" id="official-source-foot"></p>
+      </div>
+
       <div class="source-card">
         <dl>
           <div><dt>Correlação</dt><dd id="source-anexo">Anexo VIII v1.01.00</dd></div>
@@ -138,6 +299,6 @@
 </div>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-<script src="app.js?v=2026-09-19.2" defer></script>
+<script src="app.js?v=2026-10-24.4" defer></script>
 </body>
 </html>

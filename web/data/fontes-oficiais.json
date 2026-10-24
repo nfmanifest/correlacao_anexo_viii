@@ -1,0 +1,208 @@
+{
+  "catalogo": "Nexo Fiscal — fontes oficiais",
+  "atualizadoEm": "2026-10-24",
+  "observacao": "Índice de links oficiais. Não é espelho dos PDFs/XSD nem declaração de vigência integral.",
+  "criterioDeUso": "Conferir versão, publicação, vigência e ambiente (produção/homologação) no documento de origem. Nota técnica ou pacote de schemas pode complementar o MOC; não presumir que a versão numericamente maior substitui todo o conjunto anterior.",
+  "regrasDeGovernanca": [
+    "Não inferir vigência apenas pela data ou pelo número de versão.",
+    "Separar produção, homologação, minuta e versão histórica.",
+    "Registrar documento, versão, publicação, início de vigência e fim de vigência quando publicados.",
+    "Ler NTs posteriores junto do MOC e do pacote de schemas correspondente.",
+    "Não substituir códigos do Anexo VIII por versões mais novas do Anexo VII sem publicação oficial da correlação ou validação normativa explícita."
+  ],
+  "totalFontes": 24,
+  "fontes": [
+    {
+      "modelo": "MOC Online — índice central",
+      "grupo": "Índice central",
+      "titulo": "Portal de MOCs do SPED/PR",
+      "detalhe": "Índice de manuais por modelo de documento fiscal. O portal respondeu com erro 502 nesta verificação; o link foi mantido para consulta manual.",
+      "url": "https://moc.sped.fazenda.pr.gov.br/index.html",
+      "statusConsulta": "Acesso instável nesta verificação"
+    },
+    {
+      "modelo": "55 / 65",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "NF-e e NFC-e — documentos técnicos (SVRS)",
+      "detalhe": "MOC, anexos, schemas e notas técnicas de NF-e e NFC-e.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/Nfe/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "55 / 65",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "Portal Nacional da NF-e — manuais",
+      "detalhe": "Portal nacional com MOC e histórico de versões.",
+      "url": "https://www.nfe.fazenda.gov.br/portal/listaConteudo.aspx?tipoConteudo=ndIjl+iEFdE%3D",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "57",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "CT-e — documentos técnicos",
+      "detalhe": "MOC CT-e 4.00, anexos, schemas e notas técnicas.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/CTe/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "58",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "MDF-e — documentos técnicos",
+      "detalhe": "MOC MDF-e 3.00b, anexos, schemas e notas técnicas.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/mdfe/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "63",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "BP-e — documentos técnicos",
+      "detalhe": "MOC BP-e, leiautes, DABPE, schemas e notas técnicas.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/Bpe/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "66",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "NF3e — documentos técnicos",
+      "detalhe": "MOC NF3e, anexos, schemas e notas técnicas da energia elétrica.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/NF3e/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "62",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "NFCom — documentos técnicos",
+      "detalhe": "MOC NFCom, DANFE-COM, schemas, notas técnicas e tabelas.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/Nfcom/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "NFS-e Nacional",
+      "grupo": "NFS-e",
+      "titulo": "Documentação atual — produção",
+      "detalhe": "Manuais, XSD, anexos de domínio e anexos de leiaute publicados para produção.",
+      "url": "https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/documentacao-atual",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "NFS-e Nacional",
+      "grupo": "NFS-e",
+      "titulo": "Documentação técnica — índice geral",
+      "detalhe": "Índice que separa produção, homologação, APIs, RTC e leiautes antigos.",
+      "url": "https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "NFS-e Via",
+      "grupo": "NFS-e",
+      "titulo": "NFS-e Via — documentação técnica",
+      "detalhe": "Manuais e anexos específicos da NFS-e Via; não confundir com a documentação geral da NFS-e Nacional.",
+      "url": "https://www.gov.br/nfse/pt-br/nfs-e-via/documentacao-tecnica",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "RTC / IBS / CBS",
+      "grupo": "Reforma Tributária",
+      "titulo": "NFS-e — documentação técnica da RTC",
+      "detalhe": "Notas técnicas e materiais relacionados à Reforma Tributária do Consumo no ecossistema NFS-e.",
+      "url": "https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc",
+      "statusConsulta": "Página oficial de referência"
+    },
+    {
+      "modelo": "RTC / IBS / CBS",
+      "grupo": "Reforma Tributária",
+      "titulo": "NFCom — tabelas e notas técnicas",
+      "detalhe": "Página reúne tabelas de classificação tributária, crédito presumido e notas técnicas de RTC.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/Nfcom/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "RTC / IBS / CBS",
+      "grupo": "Reforma Tributária",
+      "titulo": "Conformidade Fácil — classificação tributária",
+      "detalhe": "Consulta online da tabela de CST e cClassTrib publicada no ecossistema SVRS.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/CFF/ClassificacaoTributaria",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "RTC / IBS / CBS",
+      "grupo": "Reforma Tributária",
+      "titulo": "Tabela de crédito presumido",
+      "detalhe": "Consulta online da tabela de códigos de crédito presumido.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/CFF/TabelaCreditoPresumido",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "77",
+      "grupo": "Documentos fiscais eletrônicos",
+      "titulo": "NFABI — documentos técnicos",
+      "detalhe": "Manual e anexos da Nota Fiscal Eletrônica de Alienação de Bens Imóveis.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/Nfabi/Documentos",
+      "statusConsulta": "Fonte oficial localizada"
+    },
+    {
+      "modelo": "CFOP",
+      "grupo": "Tabelas de código",
+      "titulo": "Ajuste SINIEF 07/01 — tabela de CFOP",
+      "detalhe": "Tabela nacional de Código Fiscal de Operações e Prestações, com a descrição e a nota explicativa de cada código. É a base da lista das abas NF-e e NFCom.",
+      "url": "https://www.confaz.fazenda.gov.br/legislacao/ajustes/2001/aj_007_01",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "55",
+      "grupo": "Tabelas de código",
+      "titulo": "IT 2023.002 v2.00 — Tabela de CFOP",
+      "detalhe": "Informe Técnico da NF-e que publica a tabela de CFOP e o indicador de contribuinte exclusivo do IBS/CBS.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/NFE/DownloadArquivoEstatico/?sistema=NFE&tipoArquivo=16&nomeArquivo=IT_2023.002_v2.00_Tabela_CFOP_indExcIBSCBS.pdf",
+      "statusConsulta": "Arquivo oficial localizado"
+    },
+    {
+      "modelo": "62",
+      "grupo": "Tabelas de código",
+      "titulo": "MOC NFCom — tabelas e códigos",
+      "detalhe": "Seção do MOC Online da NFCom com a relação de CFOP válidos para o documento, incluindo o 5.933.",
+      "url": "http://moc.sped.fazenda.pr.gov.br/NFCom/TabelasECodigos.html",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "62",
+      "grupo": "Tabelas de código",
+      "titulo": "NFCom — tabela de código de itens (cClass)",
+      "detalhe": "Tabela oficial do campo cClass da NFCom: 14 grupos de 3 dígitos e 85 itens de 7 dígitos, com os indicadores de dedução, CBS zero ZFM/ALC, pré-pago, faturamento centralizado e cofaturamento.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/NFCOM/tabelacclass",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "RTC / IBS / CBS",
+      "grupo": "Tabelas de código",
+      "titulo": "IT 2025.002 v1.70 — cClassTrib",
+      "detalhe": "Planilha oficial de CST e cClassTrib do IBS e da CBS, com descrição, fundamento legal, reduções e vigência.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/DFE/DownloadArquivoEstatico/?sistema=DFE&tipoArquivo=12&nomeArquivo=IT%202025.002%20v.1.70%20-%20cClassTrib.xlsx",
+      "statusConsulta": "Arquivo oficial localizado"
+    },
+    {
+      "modelo": "Reforma Tributária",
+      "grupo": "Reforma Tributária",
+      "titulo": "Receita Federal — entenda a Reforma do Consumo",
+      "detalhe": "Página oficial com o cronograma de 2026 a 2033, os tributos que passam a existir e os que deixam de existir.",
+      "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo/entenda",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "Reforma Tributária",
+      "grupo": "Reforma Tributária",
+      "titulo": "Receita Federal — Reforma Tributária do Consumo",
+      "detalhe": "Página institucional da Reforma Tributária do Consumo, com materiais e orientações ao contribuinte.",
+      "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "LC 214/2025",
+      "grupo": "Reforma Tributária",
+      "titulo": "Lei Complementar 214/2025 — texto integral",
+      "detalhe": "Norma que institui o IBS, a CBS e o Imposto Seletivo e define as regras de transição.",
+      "url": "https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm",
+      "statusConsulta": "Texto oficial referenciado"
+    }
+  ]
+}
