@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-ui-version="2026-10-24.2">
+<html lang="pt-BR" data-ui-version="2026-10-24.3">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -139,6 +139,18 @@
       <p class="table-count" id="nfcom-count" aria-live="polite"></p>
       <div class="tblwrap"><table class="data cfop-table" id="nfcom-tbl"></table></div>
       <p class="src-note" id="nfcom-note"></p>
+    </div>
+
+    <div class="sec" id="s-cclass">
+      <h2>cClass: classificação dos itens</h2>
+      <p class="cap">O <b>cClass</b> identifica o item faturado na NFCom: grupos de 3 dígitos carregam os indicadores e itens de 7 dígitos detalham o serviço. Não confundir com o <b>cClassTrib</b>, que classifica o tratamento do IBS e da CBS e fica na aba Reforma Tributária.</p>
+      <div class="list-toolbar two">
+        <label class="field" for="cclass-q"><span>Buscar código ou descrição</span><input id="cclass-q" class="search" type="search" placeholder="0100101, assinatura, fibra…" autocomplete="off"></label>
+        <label class="field" for="cclass-g"><span>Grupo</span><select id="cclass-g" class="search sel"></select></label>
+      </div>
+      <p class="table-count" id="cclass-count" aria-live="polite"></p>
+      <div class="tblwrap"><table class="data cclass-table" id="cclass-tbl"></table></div>
+      <p class="src-note" id="cclass-note"></p>
     </div>
 
     <div class="sec">

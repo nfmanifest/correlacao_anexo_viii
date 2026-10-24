@@ -28,6 +28,7 @@ def main() -> None:
     dados = (WEB / "data" / "anexo8.json").read_text(encoding="utf-8")
     fontes = (WEB / "data" / "fontes-oficiais.json").read_text(encoding="utf-8")
     cfop = (WEB / "data" / "cfop.json").read_text(encoding="utf-8")
+    cclass = (WEB / "data" / "cclass.json").read_text(encoding="utf-8")
     cclasstrib = (WEB / "data" / "cclasstrib.json").read_text(encoding="utf-8")
     reforma = (WEB / "data" / "reforma.json").read_text(encoding="utf-8")
 
@@ -35,6 +36,7 @@ def main() -> None:
     dados = dados.replace("</", "<\\/")
     fontes = fontes.replace("</", "<\\/")
     cfop = cfop.replace("</", "<\\/")
+    cclass = cclass.replace("</", "<\\/")
     cclasstrib = cclasstrib.replace("</", "<\\/")
     reforma = reforma.replace("</", "<\\/")
 
@@ -44,6 +46,7 @@ def main() -> None:
             f"<script>window.__ANEXO8__ = {dados};"
             f"window.__FONTES__ = {fontes};"
             f"window.__CFOP__ = {cfop};"
+            f"window.__CCLASS__ = {cclass};"
             f"window.__CCLASSTRIB__ = {cclasstrib};"
             f"window.__REFORMA__ = {reforma};</script>\n<script>\n{js}</script>"
         ),
@@ -53,7 +56,7 @@ def main() -> None:
         sys.exit("index.html mudou: não foi possível localizar os arquivos CSS e JS para empacotar.")
 
     SAIDA.parent.mkdir(parents=True, exist_ok=True)
-    SAIDA.write_text(html, encoding="utf-8")
+    SAIDA.write_text(html, encoding="utf-8", newline="\n")
     print(f"{SAIDA.relative_to(RAIZ)} — {SAIDA.stat().st_size // 1024} KB")
 
 

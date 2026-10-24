@@ -2,20 +2,23 @@
 
 Data da execução: 24/10/2026
 Branch: `feat/navegacao-unica`
-Versão da interface: `2026-10-24.2`
+Versão da interface: `2026-10-24.3`
 
 ## Resultado
 
 | Verificação | Resultado |
 | --- | --- |
-| Harness do `Code.gs` + dados + `dist` | **117 verificações, 0 falhas** |
+| Harness do `Code.gs` + dados + `dist` | **132 verificações, 0 falhas** |
 | Gerador de CFOP (`--validar`) | ok — 461 CFOPs, 444 NF-e, 17 NFCom |
+| Gerador de cClass (`--validar`) | ok — 99 códigos, 14 grupos, 85 itens |
 | Gerador de cClassTrib (`--validar`) | ok — 173 códigos, 18 CST |
-| Empacotador | ok — `dist/correlacao-nfs.html` com 460.164 bytes (449 KB) |
+| Empacotador | ok — `dist/correlacao-nfs.html` com 470.820 bytes (459,8 KiB) |
 | Console do navegador | sem erros e sem avisos |
 | `node --check` no `Code.gs` | ok |
 
-Limite combinado para o arquivo único: ~460 KB. O artefato ficou em 449 KB, dentro da faixa.
+Limite combinado para o arquivo único: ~460 KiB. O artefato ficou em 459,8 KiB. O
+empacotador passou a gravar o HTML com quebras de linha LF; com CRLF o mesmo conteúdo
+ocupava 473.272 bytes e estourava o limite sem nenhum ganho de conteúdo.
 
 ## Dados gerados
 
@@ -33,6 +36,22 @@ Limite combinado para o arquivo único: ~460 KB. O artefato ficou em 449 KB, den
 Conferências: sem códigos duplicados, todos com descrição e nota, sem boilerplate de
 navegação do CONFAZ. O gerador falha se um CFOP da NFCom não existir nem na base nem na
 lista de complementos.
+
+### cClass — `web/data/cclass.json`
+
+| | |
+| --- | --- |
+| Total | 99 códigos |
+| Grupos (3 dígitos) | 14 |
+| Itens (7 dígitos) | 85 |
+| Fonte | Tabela de código de itens da NFCom (SVRS) |
+| Base | MOC NFCom 1.00a e IT 2025.001 v1.01 |
+| Tamanho | 7,6 KB |
+
+Conferências: sem códigos duplicados, todo item pertence a um grupo existente e começa pelo
+código do grupo, todos têm descrição e tipo de prestação válido. Os indicadores conferidos
+são dedução (`590`), CBS zero ZFM/ALC (`060`, `080`, `110`), pré-pago (`050`), faturamento
+centralizado (`120`) e cofaturamento (`130`).
 
 ### cClassTrib — `web/data/cclasstrib.json`
 
@@ -63,9 +82,9 @@ para o texto da LC 214/2025 no Planalto.
 
 ### Fontes oficiais — `web/data/fontes-oficiais.json`
 
-23 fontes, todas com URL `http` ou `https`, atualizadas em 24/10/2026. Inclui Ajuste SINIEF
-07/01, IT 2023.002 v2.00 (CFOP), MOC NFCom, IT 2025.002 v1.70 (cClassTrib), LC 214/2025 e
-as páginas da Receita Federal sobre a Reforma.
+24 fontes, todas com URL `http` ou `https`, atualizadas em 24/10/2026. Inclui Ajuste SINIEF
+07/01, IT 2023.002 v2.00 (CFOP), MOC NFCom, tabela cClass da NFCom, IT 2025.002 v1.70
+(cClassTrib), LC 214/2025 e as páginas da Receita Federal sobre a Reforma.
 
 ## Testes no navegador
 
@@ -80,6 +99,11 @@ Servidor local em `http://localhost:8788` servindo `web/`.
 | NF-e 55 | nota expansível | abre, fecha e atualiza `aria-expanded` |
 | NFCom 62 | linhas da tabela | 17 |
 | NFCom 62 | busca `5.933` | 1 de 17 |
+| NFCom 62 | tabela cClass | 85 itens e 14 grupos |
+| NFCom 62 | filtro de grupo `590` | 5 de 85, com selo “Deduz do total” |
+| NFCom 62 | busca `fibra` | 1 de 85 (0801101) |
+| NFCom 62 | busca sem resultado | 0 de 85 |
+| NFCom 62 | contador restaurado | 85 itens e 14 grupos |
 | Reforma | cClassTrib | 173 classificações |
 | Reforma | linha do tempo | 8 itens, 1 marcado como ano corrente |
 | Reforma | tributos | 3 cartões |
@@ -93,7 +117,7 @@ Servidor local em `http://localhost:8788` servindo `web/`.
 | Reforma | busca `200015` | 1 de 173 |
 | Reforma | indOp `100101` | 1 de 19 |
 | Reforma | detalhe expansível | abre com descrição, fundamento, alíquota, vigência e documentos |
-| Fontes | cartões | 23 |
+| Fontes | cartões | 24 |
 | Fontes | busca `CFOP` | 3 |
 | Tema | alternância e `localStorage` | ok (`nexo-theme`) |
 | URL | `?tab=nfe`, `?tab=nfcom`, `?tab=reforma`, `?tab=fontes` | ok |
@@ -101,27 +125,29 @@ Servidor local em `http://localhost:8788` servindo `web/`.
 ## Arquivo único e iframe
 
 - `dist/correlacao-nfs.html` abre direto do disco e pelo servidor local.
-- Contém os cinco globais: `__ANEXO8__`, `__FONTES__`, `__CFOP__`, `__CCLASSTRIB__`,
-  `__REFORMA__`.
+- Contém os seis globais: `__ANEXO8__`, `__FONTES__`, `__CFOP__`, `__CCLASS__`,
+  `__CCLASSTRIB__` e `__REFORMA__`.
 - Sem `href="app.css"` e sem `src="app.js"`: CSS e JavaScript estão embutidos.
 - Em iframe, a marca, o seletor de tema e as abas da página ficam ocultos.
 - `postMessage` `nexo:goto` funcionou para `nfe`, `nfcom` e `reforma`.
 - `postMessage` `nexo:theme` aplicou o tema claro no iframe.
+- O shell do portal (`_preview_portal.html`) abriu a aba NFCom e exibiu os 85 itens de
+  cClass dentro do iframe, com `data-ui-version="2026-10-24.3"`.
 
 ## O que o harness cobre
 
 O harness (`nexo_validate/harness.js`) executa o `Code.gs` em um contexto `vm` com
 `UrlFetchApp` simulado e confere:
 
-1. configuração dos 8 assets e ausência das funções de injeção antigas;
+1. configuração dos 9 assets e ausência das funções de injeção antigas;
 2. autorização por domínio e por lista de e-mails;
 3. home antes e depois de `installAssets()`, incluindo sidebar, menu de configurações,
    opções de tema, cards disponíveis e ausência de placeholder;
 4. fallback da NFS-e pelo GitHub e leitura do cache em `PropertiesService`;
-5. presença dos cinco globais e das cinco abas na ordem correta;
+5. presença dos seis globais e das cinco abas na ordem correta;
 6. separação real entre as áreas: tabelas só na Reforma, catálogo só em Fontes, CFOP só nas
-   abas de documento;
-7. integridade dos JSONs de CFOP, cClassTrib, Reforma e Fontes;
+   abas de documento e cClass só na NFCom;
+7. integridade dos JSONs de CFOP, cClass, cClassTrib, Reforma e Fontes;
 8. recursos esperados em `app.js` e `app.css`;
 9. o arquivo único em `dist/`.
 
@@ -129,6 +155,7 @@ O harness (`nexo_validate/harness.js`) executa o `Code.gs` em um contexto `vm` c
 
 ```bash
 python build/gerar_cfop.py --validar
+python build/gerar_cclass.py --validar
 python build/gerar_cclasstrib.py --validar
 python build/empacotar.py
 
@@ -139,6 +166,6 @@ node harness.js
 Saída esperada no harness:
 
 ```
-verificações: 117
+verificações: 132
 falhas: nenhuma
 ```

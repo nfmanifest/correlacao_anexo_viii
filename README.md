@@ -10,9 +10,9 @@ que a página oferece: em vez da planilha com mesclagem vertical, um fluxo por s
 caixas ligadas.
 
 A página tem cinco áreas — **NFS-e** (consulta da correlação), **NF-e 55** e **NFCom 62**
-(tabelas completas de CFOP), **Reforma Tributária** (linha do tempo, tributos, prazos,
-cClassTrib, indOp e glossário) e **Fontes oficiais** (catálogo de MOCs, schemas, NTs e
-tabelas de apoio) — com busca e filtros próprios em cada uma.
+(tabelas de CFOP e, na NFCom, a tabela cClass dos itens), **Reforma Tributária** (linha do
+tempo, tributos, prazos, cClassTrib, indOp e glossário) e **Fontes oficiais** (catálogo de
+MOCs, schemas, NTs e tabelas de apoio) — com busca e filtros próprios em cada uma.
 
 ## Navegação, tema e catálogo
 
@@ -96,14 +96,16 @@ web/                      a página; é só isso que precisa ir para produção
   app.js
   data/anexo8.json        correlação da NFS-e, dados gerados e versionados
   data/cfop.json          tabela de CFOP: 461 códigos, 444 na NF-e e 17 na NFCom
+  data/cclass.json        cClass da NFCom: 99 códigos, 14 grupos e 85 itens
   data/cclasstrib.json    173 códigos e 18 CST do IBS/CBS, com fundamento e vigência
   data/reforma.json       linha do tempo, tributos, prazos, mudanças e glossário
-  data/fontes-oficiais.json  catálogo de 23 fontes, critérios e regras de governança
+  data/fontes-oficiais.json  catálogo de 24 fontes, critérios e regras de governança
 dist/
   correlacao-nfs.html     a mesma página em arquivo único, para uso sem servidor
 build/
   gerar.py                lê as planilhas oficiais e escreve web/data/anexo8.json
   gerar_cfop.py           lê os PDFs oficiais de CFOP e escreve web/data/cfop.json
+  gerar_cclass.py         lê a tabela oficial de cClass da NFCom e escreve web/data/cclass.json
   gerar_cclasstrib.py     lê a planilha oficial de cClassTrib e escreve web/data/cclasstrib.json
   empacotar.py            gera dist/correlacao-nfs.html a partir de web/
   fontes/                 planilhas e PDFs oficiais, versionados
@@ -115,10 +117,10 @@ build/
 ## Uso no portal Apps Script
 
 O projeto Apps Script (portal Nexo Fiscal) não mantém cópia de `web/`. O `Code.gs` carrega
-os oito arquivos deste repositório (`web/index.html`, `app.css`, `app.js`,
-`data/anexo8.json`, `data/fontes-oficiais.json`, `data/cfop.json`, `data/cclasstrib.json`
-e `data/reforma.json`), embute CSS, JavaScript e JSON no iframe e usa `installAssets()`
-apenas como cache versionado em `PropertiesService`.
+os nove arquivos deste repositório (`web/index.html`, `app.css`, `app.js`,
+`data/anexo8.json`, `data/fontes-oficiais.json`, `data/cfop.json`, `data/cclass.json`,
+`data/cclasstrib.json` e `data/reforma.json`), embute CSS, JavaScript e JSON no iframe e usa
+`installAssets()` apenas como cache versionado em `PropertiesService`.
 
 A fonte única de verdade é este repositório. Para atualizar o portal, altere `web/`, rode
 `python build/empacotar.py` (se usar o arquivo único) e execute `installAssets()` no Apps
@@ -169,6 +171,26 @@ MOC Online da NFCom. O `5.933` não consta do Ajuste e entra como complemento de
 a descrição do próprio MOC. O gerador falha se um CFOP da NFCom não existir nem na base nem
 na lista de complementos — é a trava contra código inventado.
 
+### Tabela de cClass (NFCom)
+
+A aba **NFCom 62** usa `web/data/cclass.json`, gerado por `build/gerar_cclass.py` a partir da
+tabela oficial de código de itens do Portal Nacional da NFCom:
+
+```bash
+python build/gerar_cclass.py --validar
+```
+
+São 99 códigos: 14 grupos de 3 dígitos e 85 itens de 7 dígitos, com descrição e tipo de
+prestação. O grupo carrega os indicadores que mudam a totalização — dedução do valor total
+(`590`), CBS zero para ZFM/ALC (`060`, `080`, `110`), pré-pago (`050`), faturamento
+centralizado (`120`) e cofaturamento (`130`). A página traz busca, filtro por grupo e os
+selos de cada indicador.
+
+O **cClass** não se confunde com o **cClassTrib**: o primeiro classifica o item faturado na
+NFCom; o segundo classifica o tratamento do IBS e da CBS e vale para os demais documentos.
+A chave interna do Anexo VIII que guarda os 28 códigos de classificação tributária chama-se
+`cclasstrib`, justamente para não repetir a confusão.
+
 ### Tabela de cClassTrib
 
 A aba **Reforma Tributária** usa `web/data/cclasstrib.json`, gerado por
@@ -211,6 +233,10 @@ validação vinculadas a ele em produção nem no piloto RTC. Sugestões de corr
 `indOp` e Código de Tributação Nacional usam os mesmos seis dígitos e não são a mesma coisa.
 `050101` é "local da prestação" como indOp e 5.01.01 como código de tributação nacional.
 
+`cClass` e `cClassTrib` também não são a mesma coisa. O cClass tem 3 ou 7 dígitos e diz qual
+item foi faturado na NFCom; o cClassTrib tem 6 dígitos (os 3 primeiros são o CST) e diz como
+o IBS e a CBS incidem sobre esse item. Um aparece na aba NFCom, o outro na Reforma Tributária.
+
 ## Fontes
 
 - Anexo VIII — Correlação Item × NBS × IndOp × cClassTrib (IBS/CBS), v1.01.00
@@ -220,9 +246,10 @@ validação vinculadas a ele em produção nem no piloto RTC. Sugestões de corr
 - Ajuste SINIEF 07/01 — tabela nacional de CFOP
 - IT 2023.002 v2.00 — tabela de CFOP da NF-e
 - MOC Online da NFCom — tabelas e códigos
+- Tabela de código de itens da NFCom (cClass)
 - IT 2025.002 v1.70 — planilha de CST e cClassTrib
 - LC 214/2025 e páginas da Receita Federal sobre a Reforma Tributária do Consumo
 
 As fontes da NFS-e estão em <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc>.
-O catálogo completo, com 23 links e o critério de uso de cada um, fica na aba **Fontes
+O catálogo completo, com 24 links e o critério de uso de cada um, fica na aba **Fontes
 oficiais** e em `web/data/fontes-oficiais.json`.

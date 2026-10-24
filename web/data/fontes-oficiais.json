@@ -10,7 +10,7 @@
     "Ler NTs posteriores junto do MOC e do pacote de schemas correspondente.",
     "Não substituir códigos do Anexo VIII por versões mais novas do Anexo VII sem publicação oficial da correlação ou validação normativa explícita."
   ],
-  "totalFontes": 23,
+  "totalFontes": 24,
   "fontes": [
     {
       "modelo": "MOC Online — índice central",
@@ -162,6 +162,14 @@
       "titulo": "MOC NFCom — tabelas e códigos",
       "detalhe": "Seção do MOC Online da NFCom com a relação de CFOP válidos para o documento, incluindo o 5.933.",
       "url": "http://moc.sped.fazenda.pr.gov.br/NFCom/TabelasECodigos.html",
+      "statusConsulta": "Página oficial consultada"
+    },
+    {
+      "modelo": "62",
+      "grupo": "Tabelas de código",
+      "titulo": "NFCom — tabela de código de itens (cClass)",
+      "detalhe": "Tabela oficial do campo cClass da NFCom: 14 grupos de 3 dígitos e 85 itens de 7 dígitos, com os indicadores de dedução, CBS zero ZFM/ALC, pré-pago, faturamento centralizado e cofaturamento.",
+      "url": "https://dfe-portal.svrs.rs.gov.br/NFCOM/tabelacclass",
       "statusConsulta": "Página oficial consultada"
     },
     {

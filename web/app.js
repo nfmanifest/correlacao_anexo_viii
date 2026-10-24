@@ -1,7 +1,7 @@
 // Correlação NFS — consulta do Anexo VIII em página estática, sem dependências.
 // Os dados vêm de data/anexo8.json, gerado por ../build/gerar.py.
 (async () => {
-  const UI_VERSION = '2026-10-24.2';
+  const UI_VERSION = '2026-10-24.3';
   const documentVersion = document.documentElement.dataset.uiVersion;
 
   // Um HTML antigo em cache pode carregar o JavaScript novo e quebrar a tela.
@@ -104,6 +104,7 @@
     return null;
   }
   const CFOP = await carregarJson('__CFOP__', 'data/cfop.json');
+  const CCLASS = await carregarJson('__CCLASS__', 'data/cclass.json');
   const CCLASSTRIB = await carregarJson('__CCLASSTRIB__', 'data/cclasstrib.json');
   const REFORMA = await carregarJson('__REFORMA__', 'data/reforma.json');
 
@@ -129,7 +130,7 @@
         if (local) { locais.add(local); partes.push(local); }
         b.c.forEach(c => {
           ccs.add(c);
-          const cc = D.cclass[c] || {};
+          const cc = D.cclasstrib[c] || {};
           partes.push('cclasstrib ' + c, cc.n || '', 'cst ' + (cc.cst || ''), cc.dcst || '', 'artigo ' + (cc.art || ''));
         });
       });
@@ -233,8 +234,8 @@
   function renderCcSel() {
     const s = $('#ccsel');
     s.appendChild(new Option('Todas as classificações', ''));
-    Object.keys(D.cclass).sort().forEach(c => {
-      const nome = D.cclass[c].n;
+    Object.keys(D.cclasstrib).sort().forEach(c => {
+      const nome = D.cclasstrib[c].n;
       s.appendChild(new Option(c + ' · ' + (nome.length > 46 ? nome.slice(0, 45) + '…' : nome), c));
     });
     s.onchange = () => { state.cc = s.value; apply(); renderList(); renderDetail(); };
@@ -523,7 +524,7 @@
           const cl = el('div', 'ccs');
           cl.appendChild(el('div', 'mobile-stage-label lbl4', 'cClassTrib · como tributa'));
           b.c.forEach(c => {
-            const o = D.cclass[c] || {}, n = el('div', 'cc');
+            const o = D.cclasstrib[c] || {}, n = el('div', 'cc');
             if (query && (textMatches(c, query) || textMatches(o.n, query) || textMatches(o.cst, query) || textMatches(o.art, query))) n.classList.add('hit');
             if (o.div) n.classList.add('diverge');
             const codeWrap = el('span', 'code-with-copy');
@@ -582,7 +583,7 @@
 
   /* ---------- tabelas de apoio ---------- */
   const DOC_NOME = { nfse: 'NFS-e', nfe: 'NF-e', nfcom: 'NFCom' };
-  const A8 = new Set(Object.keys(D.cclass || {}));
+  const A8 = new Set(Object.keys(D.cclasstrib || {}));
 
   function dadosBusca(partes) {
     const search = norm(partes.filter(Boolean).join(' '));
@@ -705,6 +706,93 @@
         'Fonte: MOC Online da NFCom, com ' + nf(meta.nfcom) + ' códigos. O 5.933 não consta da tabela do ' +
         meta.ajuste + ' e entra como complemento declarado, com a descrição do próprio MOC.'
     });
+    montarCclass();
+  }
+
+  /* ---------- cClass: código de itens da NFCom ---------- */
+  let cclassDone = false;
+  function montarCclass() {
+    if (cclassDone || !CCLASS) return;
+    cclassDone = true;
+    const tabela = $('#cclass-tbl');
+    if (!tabela) return;
+    const grupos = CCLASS.grupos || {};
+
+    const seletor = $('#cclass-g');
+    if (seletor) {
+      seletor.appendChild(new Option('Todos os grupos', ''));
+      Object.keys(grupos).sort().forEach(k => {
+        seletor.appendChild(new Option(k + ' · ' + grupos[k].n, k));
+      });
+    }
+
+    const TIPO = { '0': 'Não se aplica', '1': 'Continuada', '2': 'Não continuada' };
+    const SELOS = [
+      ['deduz', 'Deduz do total', 'tag ded'],
+      ['zfm', 'CBS zero ZFM/ALC', 'tag zfm'],
+      ['prePago', 'Pré-pago', 'tag'],
+      ['fatCentral', 'Faturamento centralizado', 'tag'],
+      ['cofat', 'Cofaturamento', 'tag']
+    ];
+
+    tabela.innerHTML = '<thead><tr><th>Código</th><th>Descrição</th><th>Grupo</th>' +
+      '<th class="th-note">Indicadores</th></tr></thead>';
+    const corpo = el('tbody');
+    const linhas = [];
+
+    (CCLASS.itens || []).forEach(item => {
+      const grupo = grupos[item.g] || {};
+      const tr = el('tr', 'cclass-row');
+      const busca = dadosBusca([item.c, item.n, item.g, grupo.n, TIPO[item.t] || '']);
+      tr.dataset.search = busca.search;
+      tr.dataset.packed = busca.packed;
+
+      tr.append(el('td', 'k', item.c), el('td', null, item.n),
+        el('td', 'k2', item.g + ' · ' + (grupo.n || '')));
+
+      const celula = el('td', 'act');
+      SELOS.forEach(([chave, rotulo, classe]) => {
+        if (grupo[chave]) celula.appendChild(el('span', classe, rotulo));
+      });
+      if (item.t) celula.appendChild(el('span', 'tipo', TIPO[item.t] || item.t));
+      tr.appendChild(celula);
+
+      corpo.appendChild(tr);
+      linhas.push({ item, tr });
+    });
+    tabela.appendChild(corpo);
+
+    const contador = $('#cclass-count');
+    const total = linhas.length;
+    function aplicar() {
+      const consulta = ($('#cclass-q') || {}).value || '';
+      const grupo = ($('#cclass-g') || {}).value || '';
+      let visiveis = 0;
+      linhas.forEach(linha => {
+        const ok = (!grupo || linha.item.g === grupo) &&
+          combina(consulta, { search: linha.tr.dataset.search, packed: linha.tr.dataset.packed });
+        linha.tr.hidden = !ok;
+        if (ok) visiveis++;
+      });
+      if (contador) {
+        contador.textContent = (visiveis === total ? nf(total) : nf(visiveis) + ' de ' + nf(total)) +
+          ' itens · ' + nf(Object.keys(grupos).length) + ' grupos';
+      }
+    }
+    ['#cclass-q', '#cclass-g'].forEach(sel => {
+      const campo = $(sel);
+      if (!campo) return;
+      campo.addEventListener('input', aplicar);
+      campo.addEventListener('change', aplicar);
+    });
+
+    const nota = $('#cclass-note');
+    if (nota) {
+      nota.textContent = 'Fonte: ' + CCLASS.meta.fonte + ', ' + CCLASS.meta.base +
+        '. O cClass identifica o item faturado; o cClassTrib, tratado na aba Reforma Tributária, ' +
+        'classifica o tratamento do IBS e da CBS.';
+    }
+    aplicar();
   }
 
   /* ---------- Reforma: cClassTrib, indOp, linha do tempo ---------- */
