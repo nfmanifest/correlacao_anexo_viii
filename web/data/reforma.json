@@ -2,21 +2,7 @@
   "meta": {
     "atualizadoEm": "2026-10-24",
     "titulo": "Reforma Tributária do Consumo",
-    "aviso": "Conteúdo de referência. Datas e regras seguem as publicações oficiais listadas em fontes; confirme a vigência antes de uso fiscal operacional.",
-    "fontes": [
-      {
-        "titulo": "Receita Federal — Entenda a Reforma Tributária do Consumo",
-        "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo/entenda"
-      },
-      {
-        "titulo": "Receita Federal — Reforma Tributária do Consumo",
-        "url": "https://www.gov.br/receitafederal/pt-br/acesso-a-informacao/acoes-e-programas/reforma-tributaria-do-consumo"
-      },
-      {
-        "titulo": "LC 214/2025 — Planalto",
-        "url": "https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm"
-      }
-    ]
+    "aviso": "Conteúdo de referência. Datas e regras seguem a LC 214/2025 e as publicações da Receita Federal; confirme a vigência antes de uso fiscal operacional."
   },
   "linhaDoTempo": [
     {

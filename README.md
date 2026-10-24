@@ -11,8 +11,8 @@ caixas ligadas.
 
 A página tem cinco áreas — **NFS-e** (consulta da correlação), **NF-e 55** e **NFCom 62**
 (tabelas de CFOP e, na NFCom, a tabela cClass dos itens), **Reforma Tributária** (linha do
-tempo, tributos, prazos, cClassTrib, indOp e glossário) e **Fontes oficiais** (catálogo de
-MOCs, schemas, NTs e tabelas de apoio) — com busca e filtros próprios em cada uma.
+tempo, tributos, regras da LC 214/2025, cClassTrib, indOp e glossário) e **Fontes oficiais**
+(catálogo de MOCs, schemas, NTs e tabelas de apoio) — com busca e filtros próprios em cada uma.
 
 ## Navegação, tema e catálogo
 
@@ -85,7 +85,8 @@ cd build && python3 empacotar.py
 
 Escreve `dist/correlacao-nfs.html` com tudo embutido. É a via mais curta para colocar a
 consulta na mão do atendimento: anexar o arquivo, pôr numa pasta compartilhada ou na
-intranet. Regenere depois de cada atualização dos dados.
+intranet. Regenere depois de cada atualização dos dados. O empacotador compacta CSS,
+JavaScript e JSON no artefato; as fontes em `web/` continuam legíveis.
 
 ## Estrutura
 
@@ -99,6 +100,7 @@ web/                      a página; é só isso que precisa ir para produção
   data/cclass.json        cClass da NFCom: 99 códigos, 14 grupos e 85 itens
   data/cclasstrib.json    173 códigos e 18 CST do IBS/CBS, com fundamento e vigência
   data/reforma.json       linha do tempo, tributos, prazos, mudanças e glossário
+  data/lc214.json         regras da LC 214/2025: IS, cashback, reduções, regimes e ZFM
   data/fontes-oficiais.json  catálogo de 24 fontes, critérios e regras de governança
 dist/
   correlacao-nfs.html     a mesma página em arquivo único, para uso sem servidor
@@ -117,10 +119,10 @@ build/
 ## Uso no portal Apps Script
 
 O projeto Apps Script (portal Nexo Fiscal) não mantém cópia de `web/`. O `Code.gs` carrega
-os nove arquivos deste repositório (`web/index.html`, `app.css`, `app.js`,
+os dez arquivos deste repositório (`web/index.html`, `app.css`, `app.js`,
 `data/anexo8.json`, `data/fontes-oficiais.json`, `data/cfop.json`, `data/cclass.json`,
-`data/cclasstrib.json` e `data/reforma.json`), embute CSS, JavaScript e JSON no iframe e usa
-`installAssets()` apenas como cache versionado em `PropertiesService`.
+`data/cclasstrib.json`, `data/reforma.json` e `data/lc214.json`), embute CSS, JavaScript e
+JSON no iframe e usa `installAssets()` apenas como cache versionado em `PropertiesService`.
 
 A fonte única de verdade é este repositório. Para atualizar o portal, altere `web/`, rode
 `python build/empacotar.py` (se usar o arquivo único) e execute `installAssets()` no Apps
@@ -211,6 +213,21 @@ tributos (CBS, IBS e IS), os cinco tributos substituídos, as mudanças de regra
 o glossário. É conteúdo editorial versionado — ao corrigir uma data ou um prazo, edite o
 JSON e rode `python build/empacotar.py`.
 
+### Regras da LC 214/2025
+
+`web/data/lc214.json` reúne o que a lei complementar fixa além do cronograma: Imposto
+Seletivo (arts. 409 a 438), cashback (arts. 112 a 124), cesta básica e reduções de 30% e
+60% (arts. 125 a 142), regimes específicos (arts. 172 a 296), split payment (arts. 27 a 35),
+Simples Nacional e MEI (arts. 41 e 516 a 518), Zona Franca de Manaus e Áreas de Livre
+Comércio (arts. 439 a 467) e a produção de efeitos de cada bloco (art. 544).
+
+São 8 tópicos e 37 regras, cada uma com o artigo de origem. A seção entra na busca da aba
+Reforma Tributária. O arquivo não repete as alíquotas de referência: o art. 18 remete a
+resolução do Senado Federal, e a lei não fixa os percentuais.
+
+O empacotador compacta CSS, JavaScript e JSON apenas no artefato de `dist/`; os arquivos de
+`web/` continuam legíveis para edição.
+
 ## O que conferir antes de confiar na resposta
 
 A conferência das 1.521 linhas contra a tabela oficial de classificação tributária apontou:
@@ -249,6 +266,7 @@ o IBS e a CBS incidem sobre esse item. Um aparece na aba NFCom, o outro na Refor
 - Tabela de código de itens da NFCom (cClass)
 - IT 2025.002 v1.70 — planilha de CST e cClassTrib
 - LC 214/2025 e páginas da Receita Federal sobre a Reforma Tributária do Consumo
+- LC 214/2025 — texto compilado no Planalto, usado nas regras de `lc214.json`
 
 As fontes da NFS-e estão em <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc>.
 O catálogo completo, com 24 links e o critério de uso de cada um, fica na aba **Fontes

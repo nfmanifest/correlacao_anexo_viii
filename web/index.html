@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR" data-ui-version="2026-10-24.3">
+<html lang="pt-BR" data-ui-version="2026-10-24.4">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="app.css?v=2026-10-24.2">
+<link rel="stylesheet" href="app.css?v=2026-10-24.4">
 </head>
 <body>
 <header class="top">
@@ -175,6 +175,7 @@
     <div class="jump">
       <a href="#s-tempo">Linha do tempo</a>
       <a href="#s-trib">Tributos</a>
+      <a href="#s-lc214">LC 214</a>
       <a href="#s-mud">Mudanças</a>
       <a href="#s-prazos">Prazos</a>
       <a href="#s-cc">cClassTrib</a>
@@ -193,6 +194,14 @@
       <h2>Os tributos que passam a existir</h2>
       <p class="cap">CBS e IBS seguem o modelo de imposto sobre valor agregado; o IS é seletivo e incide sobre itens definidos em lei.</p>
       <div class="tax-grid" id="tax"></div>
+    </div>
+
+    <div class="sec" id="s-lc214">
+      <h2>O que a LC 214/2025 fixa</h2>
+      <p class="cap">Regras que a lei complementar detalha além do cronograma: Imposto Seletivo, cashback, reduções de alíquota, regimes específicos, split payment, Simples Nacional e Zona Franca de Manaus. Cada item cita o artigo.</p>
+      <p class="table-count" id="lc214-count" aria-live="polite"></p>
+      <div class="change-grid" id="lc214"></div>
+      <p class="src-note" id="lc214-note"></p>
     </div>
 
     <div class="sec" id="s-subs">
@@ -290,6 +299,6 @@
 </div>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
-<script src="app.js?v=2026-10-24.2" defer></script>
+<script src="app.js?v=2026-10-24.4" defer></script>
 </body>
 </html>

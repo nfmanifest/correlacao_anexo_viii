@@ -465,6 +465,9 @@ table.cclass-table td:nth-child(3){white-space:nowrap}
   background:var(--surface);padding:12px 14px}
 .change-card h3{margin:0 0 5px;font-size:13px}
 .change-card p{margin:0;font-size:12px;color:var(--muted);line-height:1.55}
+#lc214{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+#lc214 .tax-facts{margin-top:10px}
+#lc214 .tag{text-transform:none;font-size:9.5px}
 
 /* ---------- Reforma: prazos e glossário ---------- */
 .prazo-list{list-style:none;margin:0;padding:0;display:grid;gap:0}

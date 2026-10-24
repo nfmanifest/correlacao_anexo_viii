@@ -2,22 +2,25 @@
 
 Data da execução: 24/10/2026
 Branch: `feat/navegacao-unica`
-Versão da interface: `2026-10-24.3`
+Versão da interface: `2026-10-24.4`
 
 ## Resultado
 
 | Verificação | Resultado |
 | --- | --- |
-| Harness do `Code.gs` + dados + `dist` | **132 verificações, 0 falhas** |
+| Harness do `Code.gs` + dados + `dist` | **141 verificações, 0 falhas** |
 | Gerador de CFOP (`--validar`) | ok — 461 CFOPs, 444 NF-e, 17 NFCom |
 | Gerador de cClass (`--validar`) | ok — 99 códigos, 14 grupos, 85 itens |
 | Gerador de cClassTrib (`--validar`) | ok — 173 códigos, 18 CST |
-| Empacotador | ok — `dist/correlacao-nfs.html` com 470.820 bytes (459,8 KiB) |
+| Empacotador | ok — `dist/correlacao-nfs.html` com 470.720 bytes (459,7 KiB) |
 | Console do navegador | sem erros e sem avisos |
 | `node --check` no `Code.gs` | ok |
 
-Limite combinado para o arquivo único: ~460 KiB. O artefato ficou em 459,8 KiB. O
-empacotador passou a gravar o HTML com quebras de linha LF; com CRLF o mesmo conteúdo
+Limite combinado para o arquivo único: ~460 KiB. O artefato ficou em 459,7 KiB, com 320
+bytes de folga. Para caber a seção da LC 214/2025 sem cortar conteúdo, o empacotador passou
+a compactar CSS, JavaScript e JSON apenas no artefato: as fontes em `web/` continuam
+legíveis. A compactação do JavaScript rende 5.781 bytes, a do CSS 1.346 e a dos JSONs
+2.161. O HTML continua sendo gravado com quebras de linha LF; com CRLF o mesmo conteúdo
 ocupava 473.272 bytes e estourava o limite sem nenhum ganho de conteúdo.
 
 ## Dados gerados
@@ -77,8 +80,33 @@ apenas `nfe`, `nfse` ou `nfcom`, e os 28 códigos do Anexo VIII estão presentes
 | Prazos | 7 |
 | Glossário | 17 termos |
 
-As três fontes do bloco (`meta.fontes`) apontam para páginas oficiais da Receita Federal e
-para o texto da LC 214/2025 no Planalto.
+O bloco `meta.fontes` foi retirado: as fontes oficiais ficam apenas na aba própria, em
+`fontes-oficiais.json`, para não duplicar links e não contrariar a regra de que a aba
+Reforma não hospeda o catálogo.
+
+### LC 214/2025 — `web/data/lc214.json`
+
+| Bloco | Regras |
+| --- | --- |
+| Imposto Seletivo (arts. 409 a 438) | 6 |
+| Cashback (arts. 112 a 124) | 4 |
+| Cesta básica e reduções (arts. 125 a 142) | 3 |
+| Regimes específicos (arts. 172 a 296) | 7 |
+| Split payment (arts. 27 a 35) | 4 |
+| Simples Nacional e MEI (arts. 41 e 516 a 518) | 3 |
+| Zona Franca de Manaus e ALC (arts. 439 a 467) | 5 |
+| Produção de efeitos (art. 544) | 5 |
+| **Total** | **37** |
+
+Conferências: todo tópico tem id, título, faixa de artigos, resumo e ao menos uma regra;
+toda regra tem rótulo, texto e citação de artigo no formato `art.`. O JSON não fixa
+alíquotas de referência — o art. 18 remete à resolução do Senado Federal.
+
+Números destacados: cashback de 100% da CBS e 20% do IBS em GLP de até 13 kg, energia,
+água, esgoto, gás canalizado e telecom; reduções de 30% (profissões liberais) e 60%
+(educação, saúde, medicamentos e outros); IS monofásico, sem crédito, com limite de 0,25%
+para bens minerais; redutor social de R$ 100 mil por imóvel residencial novo, R$ 30 mil por
+lote e R$ 600 por mês na locação; crédito presumido de 50% do IBS na ZFM.
 
 ### Fontes oficiais — `web/data/fontes-oficiais.json`
 
@@ -105,6 +133,10 @@ Servidor local em `http://localhost:8788` servindo `web/`.
 | NFCom 62 | busca sem resultado | 0 de 85 |
 | NFCom 62 | contador restaurado | 85 itens e 14 grupos |
 | Reforma | cClassTrib | 173 classificações |
+| Reforma | LC 214 | 8 tópicos e 37 regras |
+| Reforma | busca `cashback` | 4 de 37 regras, 1 tópico |
+| Reforma | busca `0,25` | 1 de 37 regras (Imposto Seletivo) |
+| Reforma | contador restaurado | 37 regras |
 | Reforma | linha do tempo | 8 itens, 1 marcado como ano corrente |
 | Reforma | tributos | 3 cartões |
 | Reforma | substituídos | 5 linhas |
@@ -125,31 +157,31 @@ Servidor local em `http://localhost:8788` servindo `web/`.
 ## Arquivo único e iframe
 
 - `dist/correlacao-nfs.html` abre direto do disco e pelo servidor local.
-- Contém os seis globais: `__ANEXO8__`, `__FONTES__`, `__CFOP__`, `__CCLASS__`,
-  `__CCLASSTRIB__` e `__REFORMA__`.
+- Contém os sete globais: `__ANEXO8__`, `__FONTES__`, `__CFOP__`, `__CCLASS__`,
+  `__CCLASSTRIB__`, `__REFORMA__` e `__LC214__`.
 - Sem `href="app.css"` e sem `src="app.js"`: CSS e JavaScript estão embutidos.
 - Em iframe, a marca, o seletor de tema e as abas da página ficam ocultos.
 - `postMessage` `nexo:goto` funcionou para `nfe`, `nfcom` e `reforma`.
 - `postMessage` `nexo:theme` aplicou o tema claro no iframe.
 - O shell do portal (`_preview_portal.html`) abriu a aba NFCom e exibiu os 85 itens de
-  cClass dentro do iframe, com `data-ui-version="2026-10-24.3"`.
+  cClass dentro do iframe, com `data-ui-version="2026-10-24.4"`.
 
 ## O que o harness cobre
 
 O harness (`nexo_validate/harness.js`) executa o `Code.gs` em um contexto `vm` com
 `UrlFetchApp` simulado e confere:
 
-1. configuração dos 9 assets e ausência das funções de injeção antigas;
+1. configuração dos 10 assets e ausência das funções de injeção antigas;
 2. autorização por domínio e por lista de e-mails;
 3. home antes e depois de `installAssets()`, incluindo sidebar, menu de configurações,
    opções de tema, cards disponíveis e ausência de placeholder;
 4. fallback da NFS-e pelo GitHub e leitura do cache em `PropertiesService`;
-5. presença dos seis globais e das cinco abas na ordem correta;
+5. presença dos sete globais e das cinco abas na ordem correta;
 6. separação real entre as áreas: tabelas só na Reforma, catálogo só em Fontes, CFOP só nas
    abas de documento e cClass só na NFCom;
-7. integridade dos JSONs de CFOP, cClass, cClassTrib, Reforma e Fontes;
+7. integridade dos JSONs de CFOP, cClass, cClassTrib, Reforma, LC 214 e Fontes;
 8. recursos esperados em `app.js` e `app.css`;
-9. o arquivo único em `dist/`.
+9. o arquivo único em `dist/`, incluindo a seção da LC 214 e a ausência de indentação no JS.
 
 ## Como repetir
 
@@ -166,6 +198,6 @@ node harness.js
 Saída esperada no harness:
 
 ```
-verificações: 132
+verificações: 141
 falhas: nenhuma
 ```

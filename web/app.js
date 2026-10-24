@@ -1,7 +1,7 @@
 // Correlação NFS — consulta do Anexo VIII em página estática, sem dependências.
 // Os dados vêm de data/anexo8.json, gerado por ../build/gerar.py.
 (async () => {
-  const UI_VERSION = '2026-10-24.3';
+  const UI_VERSION = '2026-10-24.4';
   const documentVersion = document.documentElement.dataset.uiVersion;
 
   // Um HTML antigo em cache pode carregar o JavaScript novo e quebrar a tela.
@@ -107,6 +107,7 @@
   const CCLASS = await carregarJson('__CCLASS__', 'data/cclass.json');
   const CCLASSTRIB = await carregarJson('__CCLASSTRIB__', 'data/cclasstrib.json');
   const REFORMA = await carregarJson('__REFORMA__', 'data/reforma.json');
+  const LC214 = await carregarJson('__LC214__', 'data/lc214.json');
 
   const LOC_ORDER = ['Local da prestação', 'Domicílio principal do adquirente', 'Local do imóvel',
     'Local da entrega ou da disponibilização', 'Local do evento', 'Domicílio principal do adquirente (matriz)', 'Via explorada'];
@@ -799,6 +800,64 @@
   let refDone = false;
   let ccAplicar = null;
   let indFiltrar = null;
+  let lcFiltrar = null;
+
+  function montarLc214() {
+    const box = $('#lc214');
+    if (!box || !LC214) return;
+    const cards = [];
+    let totalItens = 0;
+
+    (LC214.topicos || []).forEach(topico => {
+      const card = el('article', 'change-card');
+      const titulo = el('h3', null, topico.titulo);
+      titulo.appendChild(el('span', 'tag', topico.artigos));
+      card.append(titulo, el('p', null, topico.resumo || ''));
+
+      const dl = el('dl', 'tax-facts');
+      const itens = [];
+      (topico.itens || []).forEach(item => {
+        const linha = el('div');
+        const dd = el('dd', null, item.v);
+        if (item.art) dd.appendChild(el('span', 'tag', item.art));
+        linha.append(el('dt', null, item.k), dd);
+        linha.dataset.search = norm([item.k, item.v, item.art].join(' '));
+        dl.appendChild(linha);
+        itens.push(linha);
+      });
+      card.appendChild(dl);
+      box.appendChild(card);
+      cards.push({ card, itens, search: norm([topico.titulo, topico.resumo, topico.artigos].join(' ')) });
+      totalItens += itens.length;
+    });
+
+    const contador = $('#lc214-count');
+    lcFiltrar = () => {
+      const consulta = ($('#refq') || {}).value || '';
+      const busca = terms(consulta);
+      let visiveis = 0;
+      cards.forEach(({ card, itens, search }) => {
+        const topicoCombina = !busca.length || busca.every(t => search.includes(t));
+        let n = 0;
+        itens.forEach(linha => {
+          const ok = !busca.length || topicoCombina || busca.every(t => linha.dataset.search.includes(t));
+          linha.hidden = !ok;
+          if (ok) n++;
+        });
+        card.hidden = n === 0;
+        visiveis += n;
+      });
+      if (contador) {
+        contador.textContent = (visiveis === totalItens ? nf(totalItens) : nf(visiveis) + ' de ' + nf(totalItens)) + ' regras';
+      }
+    };
+    lcFiltrar();
+
+    const nota = $('#lc214-note');
+    if (nota) {
+      nota.textContent = 'Fonte: ' + LC214.meta.fonte + '. ' + LC214.meta.aviso;
+    }
+  }
 
   function montarCc() {
     if (!CCLASSTRIB) return;
@@ -1042,6 +1101,7 @@
     renderTimeline();
     renderTributos();
     renderSubstituidos();
+    montarLc214();
     renderMudancas();
     renderPrazos();
     montarInd();
@@ -1054,6 +1114,7 @@
     refq.addEventListener('input', () => {
       if (indFiltrar) indFiltrar();
       if (ccAplicar) ccAplicar();
+      if (lcFiltrar) lcFiltrar();
     });
   }
 

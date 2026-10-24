@@ -1,0 +1,260 @@
+{
+  "meta": {
+    "atualizadoEm": "2026-10-24",
+    "titulo": "O que a LC 214/2025 fixa",
+    "aviso": "Resumo de dispositivos da LC 214/2025. As alíquotas de referência do IBS e da CBS são fixadas por resolução do Senado Federal (art. 18) e não constam da lei.",
+    "fonte": "LC 214/2025 — texto compilado",
+    "url": "https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm"
+  },
+  "topicos": [
+    {
+      "id": "is",
+      "titulo": "Imposto Seletivo",
+      "artigos": "arts. 409 a 438",
+      "resumo": "Tributo federal monofásico sobre bens e serviços prejudiciais à saúde ou ao meio ambiente.",
+      "itens": [
+        {
+          "k": "Incidência",
+          "v": "Veículos, embarcações e aeronaves, produtos fumígenos, bebidas alcoólicas e açucaradas, bens minerais, concursos de prognósticos e fantasy sport, além do carvão mineral.",
+          "art": "art. 409"
+        },
+        {
+          "k": "Monofásico",
+          "v": "Incide uma única vez sobre o bem ou serviço, sem crédito de operações anteriores nem crédito para etapas seguintes.",
+          "art": "art. 410"
+        },
+        {
+          "k": "Não incide",
+          "v": "Energia elétrica, telecomunicações e os bens e serviços com alíquota reduzida pela EC 132/2023.",
+          "art": "art. 413"
+        },
+        {
+          "k": "Alíquotas",
+          "v": "Fixadas em lei ordinária. Veículos são graduados por potência, eficiência energética e emissão; bens minerais extraídos têm limite de 0,25%.",
+          "art": "arts. 419 e 422"
+        },
+        {
+          "k": "Escalonamento",
+          "v": "Fumígenos, bebidas alcoólicas e açucaradas incorporam de 2029 a 2033 o diferencial entre a alíquota de ICMS do produto e a modal.",
+          "art": "art. 422, § 5º"
+        },
+        {
+          "k": "Apuração",
+          "v": "Mensal e consolidada por todos os estabelecimentos; alíquotas específicas corrigidas pelo IPCA uma vez ao ano.",
+          "art": "arts. 430, 431 e 436"
+        }
+      ]
+    },
+    {
+      "id": "cashback",
+      "titulo": "Cashback",
+      "artigos": "arts. 112 a 124",
+      "resumo": "Devolução de IBS e CBS para famílias de baixa renda cadastradas no CadÚnico.",
+      "itens": [
+        {
+          "k": "Quem recebe",
+          "v": "Família com renda mensal per capita de até meio salário mínimo, residente no país e com CPF em situação regular. A inclusão é automática.",
+          "art": "art. 113"
+        },
+        {
+          "k": "Percentuais",
+          "v": "100% da CBS e 20% do IBS no botijão de até 13 kg, energia elétrica, água, esgoto, gás canalizado e telecomunicações; 20% de cada tributo nos demais casos.",
+          "art": "art. 118"
+        },
+        {
+          "k": "Início",
+          "v": "CBS a partir de janeiro de 2027; IBS a partir de janeiro de 2029.",
+          "art": "art. 123"
+        },
+        {
+          "k": "Pagamento",
+          "v": "Nas contas de consumo, a devolução ocorre no momento da cobrança; os valores são disponibilizados em até 15 dias e repassados em até 10 dias.",
+          "art": "art. 116"
+        }
+      ]
+    },
+    {
+      "id": "reducoes",
+      "titulo": "Cesta básica e alíquotas reduzidas",
+      "artigos": "arts. 125 a 142",
+      "resumo": "Três faixas de tratamento: alíquota zero, redução de 30% e redução de 60%.",
+      "itens": [
+        {
+          "k": "Alíquota zero",
+          "v": "Produtos da Cesta Básica Nacional de Alimentos, em lista fechada no Anexo I da lei.",
+          "art": "art. 125"
+        },
+        {
+          "k": "Redução de 30%",
+          "v": "Serviços de profissões liberais fiscalizadas por conselho profissional, como advogados, engenheiros, médicos e contabilistas.",
+          "art": "art. 127"
+        },
+        {
+          "k": "Redução de 60%",
+          "v": "Educação, saúde, dispositivos médicos e de acessibilidade, medicamentos, alimentos, higiene e limpeza popular, agro in natura, insumos agropecuários, cultura, comunicação institucional, desporto e segurança nacional.",
+          "art": "arts. 128 a 142"
+        }
+      ]
+    },
+    {
+      "id": "especificos",
+      "titulo": "Regimes específicos",
+      "artigos": "arts. 172 a 296",
+      "resumo": "Setores com base de cálculo, alíquota ou sujeição passiva próprias, sem sair do IBS e da CBS.",
+      "itens": [
+        {
+          "k": "Combustíveis",
+          "v": "Alíquota uniforme em todo o país, específica por unidade de medida e diferenciada por produto; biocombustíveis e hidrogênio ficam entre 40% e 90% da alíquota dos fósseis.",
+          "art": "arts. 174 e 175"
+        },
+        {
+          "k": "Serviços financeiros",
+          "v": "Alíquota fixada de modo a manter a carga tributária do setor de 2027 a 2033.",
+          "art": "arts. 189 e 233"
+        },
+        {
+          "k": "Planos de saúde",
+          "v": "Alíquota nacional uniforme igual à de referência menos 60%; planos de animais domésticos, menos 30%.",
+          "art": "arts. 237 e 243"
+        },
+        {
+          "k": "Bens imóveis",
+          "v": "Alíquotas reduzidas em 50%; locação, cessão onerosa e arrendamento têm redução de 70%. Redutor social de R$ 100 mil por imóvel residencial novo, R$ 30 mil por lote e R$ 600 por mês na locação residencial.",
+          "art": "arts. 259, 260 e 261"
+        },
+        {
+          "k": "Bares, restaurantes e hotelaria",
+          "v": "Alíquotas reduzidas em 40%, inclusive para parques de diversão, parques temáticos e agências de turismo.",
+          "art": "arts. 275 e 281"
+        },
+        {
+          "k": "Transporte",
+          "v": "Coletivo urbano, semiurbano e metropolitano com alíquota zero e crédito vedado; intermunicipal, interestadual e aéreo regional com redução de 40%.",
+          "art": "arts. 285 a 287"
+        },
+        {
+          "k": "Cooperativas",
+          "v": "Opção por regime com alíquota zero nas operações entre o associado e a cooperativa e entre cooperativas.",
+          "art": "art. 271"
+        }
+      ]
+    },
+    {
+      "id": "split",
+      "titulo": "Split payment",
+      "artigos": "arts. 27 a 35",
+      "resumo": "Recolhimento do tributo no momento da liquidação financeira da transação de pagamento.",
+      "itens": [
+        {
+          "k": "Como funciona",
+          "v": "Prestadores de serviços de pagamento e operadoras de arranjos segregam e recolhem IBS e CBS na liquidação financeira.",
+          "art": "art. 31"
+        },
+        {
+          "k": "Documento fiscal",
+          "v": "A nota precisa vincular a operação à transação de pagamento e identificar os valores dos tributos incidentes.",
+          "art": "art. 32"
+        },
+        {
+          "k": "Procedimento simplificado",
+          "v": "Opção com percentual preestabelecido sobre o valor da operação, definido pelo Comitê Gestor do IBS e pela RFB e que pode variar por setor.",
+          "art": "art. 33"
+        },
+        {
+          "k": "Entrada em funcionamento",
+          "v": "Simultânea para os principais meios de pagamento eletrônico, na forma do regulamento.",
+          "art": "art. 35"
+        }
+      ]
+    },
+    {
+      "id": "simples",
+      "titulo": "Simples Nacional e MEI",
+      "artigos": "arts. 41 e 516 a 518",
+      "resumo": "O regime regular é a regra; o Simples e o MEI permanecem com regras próprias.",
+      "itens": [
+        {
+          "k": "Regra geral",
+          "v": "Fica no regime regular do IBS e da CBS quem não optar pelo Simples Nacional ou pelo MEI.",
+          "art": "art. 41, § 1º"
+        },
+        {
+          "k": "Opção pelo regime regular",
+          "v": "O optante do Simples pode apurar e recolher IBS e CBS pelo regime regular, nos termos da LC 123/2006.",
+          "art": "art. 41, §§ 3º e 4º"
+        },
+        {
+          "k": "Vedação de saída",
+          "v": "Não pode sair do regime regular quem recebeu ressarcimento de créditos de IBS ou CBS no ano corrente ou no anterior.",
+          "art": "art. 41, § 5º"
+        }
+      ]
+    },
+    {
+      "id": "zfm",
+      "titulo": "Zona Franca de Manaus e Áreas de Livre Comércio",
+      "artigos": "arts. 439 a 467",
+      "resumo": "Incentivos preservados até o prazo do art. 92-A do ADCT, com créditos presumidos e alíquota zero nas entradas.",
+      "itens": [
+        {
+          "k": "Prazo",
+          "v": "Os benefícios da ZFM e das Áreas de Livre Comércio valem até a data fixada no art. 92-A do ADCT.",
+          "art": "arts. 439 e 458"
+        },
+        {
+          "k": "Vendas para a ZFM",
+          "v": "Alíquota zero de IBS e CBS em bem industrializado de origem nacional destinado a contribuinte habilitado na ZFM.",
+          "art": "art. 445"
+        },
+        {
+          "k": "Crédito presumido",
+          "v": "50% da alíquota do IBS na importação para revenda presencial; o crédito só compensa IBS e CBS e expira em 5 anos.",
+          "art": "arts. 444 e 452"
+        },
+        {
+          "k": "IPI",
+          "v": "Zero a partir de 2027 para produtos com alíquota inferior a 6,5% industrializados na ZFM.",
+          "art": "art. 454"
+        },
+        {
+          "k": "Contrapartida do Amazonas",
+          "v": "Contribuição de 1,5% sobre o faturamento das indústrias incentivadas, para ensino superior e fomento regional.",
+          "art": "art. 457"
+        }
+      ]
+    },
+    {
+      "id": "vigencia",
+      "titulo": "Quando cada regra passa a valer",
+      "artigos": "art. 544",
+      "resumo": "A lei entrou em vigor na publicação, mas cada bloco de dispositivos produz efeitos em datas diferentes.",
+      "itens": [
+        {
+          "k": "2025",
+          "v": "Arts. 35, 58, 60, 62, 266, 317, 403, 480 a 484, 516 e 541.",
+          "art": "art. 544, II"
+        },
+        {
+          "k": "2026",
+          "v": "Demais dispositivos, incluindo as normas gerais de incidência e apuração do IBS e da CBS.",
+          "art": "art. 544, VI"
+        },
+        {
+          "k": "2027",
+          "v": "Arts. 168 a 171, 309 a 315, 444, 450, 461, 462, 467, 499 a 515, 517 e 519 a 534.",
+          "art": "art. 544, III"
+        },
+        {
+          "k": "2029",
+          "v": "Arts. 446, 447, 449, 450 §§ 1º e 5º, 464, 465 e 474.",
+          "art": "art. 544, IV"
+        },
+        {
+          "k": "2033",
+          "v": "Arts. 518 e 543.",
+          "art": "art. 544, V"
+        }
+      ]
+    }
+  ]
+}
